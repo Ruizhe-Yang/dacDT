@@ -1,6 +1,6 @@
 "Begin run...".println();
-//showAllBlocksInfotation();
-transform();
+showAllBlocksInfotation();
+//transform();
 "Run done!".println();
 
 operation transform(){
@@ -641,6 +641,7 @@ operation showAllBlocksInfotation(){
 		"_______________________________________________".println();
 //		b.println();
 		("b.Path                = "+b.Path).println();
+		("b.Position            = "+b.Position).println();
 		("b.Name                = "+b.Name).println();
 		("b.Handle              = "+b.Handle).println();
 		("b.BlockType           = "+b.BlockType).println();
