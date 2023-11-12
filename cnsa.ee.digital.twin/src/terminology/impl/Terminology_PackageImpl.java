@@ -133,7 +133,6 @@ public class Terminology_PackageImpl extends EPackageImpl implements Terminology
 	private Terminology_PackageImpl() {
 		super(eNS_URI, Terminology_Factory.eINSTANCE);
 	}
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

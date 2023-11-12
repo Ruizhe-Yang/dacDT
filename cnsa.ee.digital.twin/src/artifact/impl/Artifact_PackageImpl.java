@@ -135,7 +135,6 @@ public class Artifact_PackageImpl extends EPackageImpl implements Artifact_Packa
 	private Artifact_PackageImpl() {
 		super(eNS_URI, Artifact_Factory.eINSTANCE);
 	}
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

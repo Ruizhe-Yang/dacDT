@@ -68,7 +68,6 @@ public class Digital_twin_PackageImpl extends EPackageImpl implements Digital_tw
 	private Digital_twin_PackageImpl() {
 		super(eNS_URI, Digital_twin_Factory.eINSTANCE);
 	}
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
