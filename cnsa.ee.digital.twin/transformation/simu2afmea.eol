@@ -68,7 +68,6 @@ operation getElementByHandle(handle : Any) {
 operation getPredecessor(element: Any) {
 	var connectivity = getConnectivity(element);
 	var index = connectivity.size-1;
-	var scenario1 = false;
 	var last = connectivity.at(index);
 	if(last.DstBlock.size > 1) {
 		if(index > 1) {

@@ -23,6 +23,7 @@ operation main(){
 	gain.gain = 2;
 	busCreator.inputs = 3;
 	
+	
 	// Link them
 	sineWave.link(gain);
 	gain.link(saturation);
@@ -30,12 +31,20 @@ operation main(){
 	gain.linkTo(busCreator, 2);
 	sineWave.linkTo(busCreator, 3);
 	busCreator.link(scope);
+	
+	//sineWave.unlink(gain);
+	
+//	getSuccessor(sineWave).println();
+	
 //	showAllBlocksInfotation();
 //	"+++++++++++++++++++++++++++++++++++++++++++++++++++".println();
 //	S.simulate();
 //	blocks.println();
 	for (b in S!Block.all){
-		b.unlink();
+		var lines = getLinesFrom(b);
+		for(l in lines) {
+			delete l;
+		}
 		delete b;
 	}
 //	delete sineWave;
@@ -78,4 +87,15 @@ operation showAllBlocksInfotation(){
 			}
 		}
 	}
+}
+
+operation getLinesFrom(element: Any) {
+	var ret = new Sequence;
+	var lines = Line.all();
+	for(l in lines) {
+		if(l.getSource = element) {
+			ret.add(l);
+		}
+	}
+	return ret;
 }
