@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Epsilon Simulink driver
+Bundle-SymbolicName: org.eclipse.epsilon.emc.simulink
+Bundle-Version: 2.3.0.202104221823
+Bundle-ClassPath: org.eclipse.epsilon.emc.simulink_2.3.0.202104221823.jar
+Bundle-Vendor: Eclipse Modeling Project
+Export-Package: org.eclipse.epsilon.emc.simulink.introspection.java,
+ org.eclipse.epsilon.emc.simulink.model,
+ org.eclipse.epsilon.emc.simulink.model.element,
+ org.eclipse.epsilon.emc.simulink.operations.contributors,
+ org.eclipse.epsilon.emc.simulink.util,
+ org.eclipse.epsilon.emc.simulink.util.collection,
+ org.eclipse.epsilon.emc.simulink.util.manager
+Require-Bundle: org.eclipse.epsilon.emc.simulink.common;visibility:=reexport
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Created-By: Maven Archiver 3.5.0
+Automatic-Module-Name: org.eclipse.epsilon.emc.simulink
+Build-Jdk-Spec: 11

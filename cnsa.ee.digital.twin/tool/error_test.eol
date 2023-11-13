@@ -1,4 +1,4 @@
-//import "simulink2dt.eol";
+import "simulink2dt.eol";
 
 "Begin run...".println();
 main();
@@ -11,7 +11,7 @@ operation main(){
 	var saturation = new `simulink/Discontinuities/Saturation`;
 	var busCreator = new `simulink/Signal Routing/Bus Creator`;
 	var scope = new `simulink/Sinks/Scope`;
-	
+
 	// Position them on the diagram
 	sineWave.position = "[100 100 130 130]";
 	gain.position = "[200 100 230 130]";
@@ -31,9 +31,51 @@ operation main(){
 	sineWave.linkTo(busCreator, 3);
 	busCreator.link(scope);
 //	showAllBlocksInfotation();
+//	"+++++++++++++++++++++++++++++++++++++++++++++++++++".println();
+//	S.simulate();
+//	blocks.println();
+	for (b in S!Block.all){
+		b.unlink();
+		delete b;
+	}
 //	delete sineWave;
 //	delete gain;
 //	delete saturation;
 //	delete busCreator;
 //	delete scope;
+	showAllBlocksInfotation();
+}
+
+operation showAllBlocksInfotation(){
+	var blocks = S!Block.all;
+//	blocks.println();
+	for (b in blocks){
+		"_______________________________________________".println();
+//		b.println();
+		("b.Path                = "+b.Path).println();
+		("b.Position            = "+b.Position).println();
+		("b.Name                = "+b.Name).println();
+		("b.Handle              = "+b.Handle).println();
+		("b.BlockType           = "+b.BlockType).println();
+		("b.PortHandles.Inport  = "+b.PortHandles.Inport).println();
+		("b.PortHandles.Outport = "+b.PortHandles.Outport).println();
+//		("b.PortHandles.Enable  = "+b.PortHandles.Enable).println();
+//		("b.PortHandles.Trigger = "+b.PortHandles.Trigger).println();
+//		("b.PortHandles.State   = "+b.PortHandles.State).println();
+		("b.PortHandles.LConn   = "+b.PortHandles.LConn).println();
+		("b.PortHandles.RConn   = "+b.PortHandles.RConn).println();
+//		("b.PortHandles.Ifaction= "+b.PortHandles.Ifaction).println();
+//		("b.PortHandles.Reset   = "+b.PortHandles.Reset).println();
+//		("b.PortHandles.Event   = "+b.PortHandles.Event).println();
+		for (line in b.portconnectivity){
+			if (line.isDefined()){
+				"+++++++++++++++++++++++".println();
+				("line                  = "+line.SrcBlock).println();
+				("line.SrcBlock         = "+line.SrcBlock).println();
+				("line.SrcPort          = "+line.SrcPort).println();
+				("line.DstBlock         = "+line.DstBlock).println();
+				("line.DstPort          = "+line.DstPort).println();
+			}
+		}
+	}
 }
