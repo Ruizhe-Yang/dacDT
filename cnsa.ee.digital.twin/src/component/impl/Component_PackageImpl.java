@@ -2,8 +2,6 @@
  */
 package component.impl;
 
-import artifact.Artifact_Package;
-import artifact.impl.Artifact_PackageImpl;
 import base.Base_Package;
 
 import base.impl.Base_PackageImpl;
@@ -43,8 +41,6 @@ import component.TransitionNode;
 import component.UndirectedRelationship;
 import component.UtilityNodes;
 
-import digital_twin.Digital_twin_Package;
-import digital_twin.impl.Digital_twin_PackageImpl;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
@@ -52,8 +48,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-import terminology.Terminology_Package;
-import terminology.impl.Terminology_PackageImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -333,28 +327,16 @@ public class Component_PackageImpl extends EPackageImpl implements Component_Pac
 		isInited = true;
 
 		// Obtain or create and register interdependencies
-		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(Digital_twin_Package.eNS_URI);
-		Digital_twin_PackageImpl theDigital_twin_Package = (Digital_twin_PackageImpl)(registeredPackage instanceof Digital_twin_PackageImpl ? registeredPackage : Digital_twin_Package.eINSTANCE);
-		registeredPackage = EPackage.Registry.INSTANCE.getEPackage(Base_Package.eNS_URI);
+		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(Base_Package.eNS_URI);
 		Base_PackageImpl theBase_Package = (Base_PackageImpl)(registeredPackage instanceof Base_PackageImpl ? registeredPackage : Base_Package.eINSTANCE);
-		registeredPackage = EPackage.Registry.INSTANCE.getEPackage(Artifact_Package.eNS_URI);
-		Artifact_PackageImpl theArtifact_Package = (Artifact_PackageImpl)(registeredPackage instanceof Artifact_PackageImpl ? registeredPackage : Artifact_Package.eINSTANCE);
-		registeredPackage = EPackage.Registry.INSTANCE.getEPackage(Terminology_Package.eNS_URI);
-		Terminology_PackageImpl theTerminology_Package = (Terminology_PackageImpl)(registeredPackage instanceof Terminology_PackageImpl ? registeredPackage : Terminology_Package.eINSTANCE);
 
 		// Create package meta-data objects
 		theComponent_Package.createPackageContents();
-		theDigital_twin_Package.createPackageContents();
 		theBase_Package.createPackageContents();
-		theArtifact_Package.createPackageContents();
-		theTerminology_Package.createPackageContents();
 
 		// Initialize created meta-data
 		theComponent_Package.initializePackageContents();
-		theDigital_twin_Package.initializePackageContents();
 		theBase_Package.initializePackageContents();
-		theArtifact_Package.initializePackageContents();
-		theTerminology_Package.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theComponent_Package.freeze();
@@ -710,48 +692,8 @@ public class Component_PackageImpl extends EPackageImpl implements Component_Pac
 	 * @generated
 	 */
 	@Override
-	public EReference getDirectedRelationship_Source() {
-		return (EReference)directedRelationshipEClass.getEStructuralFeatures().get(-1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EReference getDirectedRelationship_Target() {
-		return (EReference)directedRelationshipEClass.getEStructuralFeatures().get(-1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public EClass getUndirectedRelationship() {
 		return undirectedRelationshipEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EReference getUndirectedRelationship_Source() {
-		return (EReference)undirectedRelationshipEClass.getEStructuralFeatures().get(-1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EReference getUndirectedRelationship_Target() {
-		return (EReference)undirectedRelationshipEClass.getEStructuralFeatures().get(-1);
 	}
 
 	/**
@@ -1363,12 +1305,8 @@ public class Component_PackageImpl extends EPackageImpl implements Component_Pac
 		createEReference(componentRelationshipEClass, COMPONENT_RELATIONSHIP__TARGET);
 
 		directedRelationshipEClass = createEClass(DIRECTED_RELATIONSHIP);
-		createEReference(directedRelationshipEClass, DIRECTED_RELATIONSHIP__SOURCE);
-		createEReference(directedRelationshipEClass, DIRECTED_RELATIONSHIP__TARGET);
 
 		undirectedRelationshipEClass = createEClass(UNDIRECTED_RELATIONSHIP);
-		createEReference(undirectedRelationshipEClass, UNDIRECTED_RELATIONSHIP__SOURCE);
-		createEReference(undirectedRelationshipEClass, UNDIRECTED_RELATIONSHIP__TARGET);
 
 		componentAssetEClass = createEClass(COMPONENT_ASSET);
 
@@ -1548,12 +1486,8 @@ public class Component_PackageImpl extends EPackageImpl implements Component_Pac
 		initEReference(getComponentRelationship_Target(), this.getComponentElement(), null, "target", null, 0, 1, ComponentRelationship.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(directedRelationshipEClass, DirectedRelationship.class, "DirectedRelationship", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getDirectedRelationship_Source(), this.getComponentElement(), null, "source", null, 0, 1, DirectedRelationship.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getDirectedRelationship_Target(), this.getComponentElement(), null, "target", null, 0, 1, DirectedRelationship.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(undirectedRelationshipEClass, UndirectedRelationship.class, "UndirectedRelationship", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getUndirectedRelationship_Source(), this.getComponentElement(), null, "source", null, 0, 1, UndirectedRelationship.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getUndirectedRelationship_Target(), this.getComponentElement(), null, "target", null, 0, 1, UndirectedRelationship.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(componentAssetEClass, ComponentAsset.class, "ComponentAsset", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
