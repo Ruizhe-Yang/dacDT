@@ -12,8 +12,8 @@ Export-Package: org.eclipse.epsilon.emc.simulink.introspection.java,
  org.eclipse.epsilon.emc.simulink.util,
  org.eclipse.epsilon.emc.simulink.util.collection,
  org.eclipse.epsilon.emc.simulink.util.manager
-Require-Bundle: org.eclipse.epsilon.emc.simulink.common;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Created-By: Maven Archiver 3.5.0
 Automatic-Module-Name: org.eclipse.epsilon.emc.simulink
 Build-Jdk-Spec: 11
+Require-Bundle: org.eclipse.epsilon.emc.simulink.common;bundle-version="2.3.0"

@@ -196,16 +196,16 @@ public class Base_PackageImpl extends EPackageImpl implements Base_Package {
 		isInited = true;
 
 		// Obtain or create and register interdependencies
-		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(Terminology_Package.eNS_URI);
-		Terminology_PackageImpl theTerminology_Package = (Terminology_PackageImpl)(registeredPackage instanceof Terminology_PackageImpl ? registeredPackage : Terminology_Package.eINSTANCE);
+		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(Component_Package.eNS_URI);
+		Component_PackageImpl theComponent_Package = (Component_PackageImpl)(registeredPackage instanceof Component_PackageImpl ? registeredPackage : Component_Package.eINSTANCE);
 
 		// Create package meta-data objects
 		theBase_Package.createPackageContents();
-		theTerminology_Package.createPackageContents();
+		theComponent_Package.createPackageContents();
 
 		// Initialize created meta-data
 		theBase_Package.initializePackageContents();
-		theTerminology_Package.initializePackageContents();
+		theComponent_Package.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theBase_Package.freeze();
