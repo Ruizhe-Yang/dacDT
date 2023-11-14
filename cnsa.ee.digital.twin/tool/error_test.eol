@@ -5,6 +5,27 @@ main();
 "Run done!".println();
 
 operation main(){
+//	for (b in S!Block.all){
+//		b.unlink();
+//		delete b;
+//	}
+//	delete sineWave;
+//	delete gain;
+//	delete saturation;
+//	delete busCreator;
+//	delete scope;
+//	createElements();
+//	showAllBlocksInformation();
+	var gain : `simulink/Math Operations/Gain`;
+	for (b in S!Block.all){
+		if (b.type = "Gain"){
+			
+			"++++".println();
+		}
+	}
+}
+
+operation createElements(){
 	// Create elements
 	var sineWave = new `simulink/Sources/Sine Wave`;
 	var gain = new `simulink/Math Operations/Gain`;
@@ -30,28 +51,14 @@ operation main(){
 	gain.linkTo(busCreator, 2);
 	sineWave.linkTo(busCreator, 3);
 	busCreator.link(scope);
-//	showAllBlocksInfotation();
-//	"+++++++++++++++++++++++++++++++++++++++++++++++++++".println();
-//	S.simulate();
-//	blocks.println();
-	for (b in S!Block.all){
-		b.unlink();
-		delete b;
-	}
-//	delete sineWave;
-//	delete gain;
-//	delete saturation;
-//	delete busCreator;
-//	delete scope;
-	showAllBlocksInfotation();
 }
 
-operation showAllBlocksInfotation(){
+operation showAllBlocksInformation(){
 	var blocks = S!Block.all;
 //	blocks.println();
 	for (b in blocks){
 		"_______________________________________________".println();
-//		b.println();
+		b.println();
 		("b.Path                = "+b.Path).println();
 		("b.Position            = "+b.Position).println();
 		("b.Name                = "+b.Name).println();
@@ -70,7 +77,8 @@ operation showAllBlocksInfotation(){
 		for (line in b.portconnectivity){
 			if (line.isDefined()){
 				"+++++++++++++++++++++++".println();
-				("line                  = "+line.SrcBlock).println();
+				("line                  = "+line).println();
+				("line.Position         = "+line.Position).println();
 				("line.SrcBlock         = "+line.SrcBlock).println();
 				("line.SrcPort          = "+line.SrcPort).println();
 				("line.DstBlock         = "+line.DstBlock).println();

@@ -1,5 +1,5 @@
 "Begin run...".println();
-showAllBlocksInfotation();
+showAllBlocksInformation();
 //transform();
 "Run done!".println();
 
@@ -634,7 +634,7 @@ operation T!Component createSwitch(){
 	return switchNode;
 }
 
-operation showAllBlocksInfotation(){
+operation showAllBlocksInformation(){
 	var blocks = S!Block.all;
 //	blocks.println();
 	for (b in blocks){
