@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Target
+Bundle-SymbolicName: epsilon.23.target.platform
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: dac.2024.target
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
