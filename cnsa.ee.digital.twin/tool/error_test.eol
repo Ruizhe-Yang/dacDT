@@ -1,5 +1,8 @@
 import "simulink2dt.eol";
 
+var map = new Map;
+var randMap = new Map;
+
 "Begin run...".println();
 main();
 "Run done!".println();
@@ -32,27 +35,23 @@ operation main(){
 	sineWave.linkTo(busCreator, 3);
 	busCreator.link(scope);
 	
-	//sineWave.unlink(gain);
 	
-//	getSuccessor(sineWave).println();
+	populateMap();
+//	sineWave.handle.println();
+//	map.keySet().println();
+//	map.keySet().contains(sineWave).println();
+//	map.get(sineWave.handle).println();
+	attachRandToElement(sineWave, 1);
 	
+	
+//	for (b in S!Block.all){
+//		var lines = getLinesFrom(b);
+//		for(l in lines) {
+//			delete l;
+//		}
+//		delete b;
+//	}
 //	showAllBlocksInfotation();
-//	"+++++++++++++++++++++++++++++++++++++++++++++++++++".println();
-//	S.simulate();
-//	blocks.println();
-	for (b in S!Block.all){
-		var lines = getLinesFrom(b);
-		for(l in lines) {
-			delete l;
-		}
-		delete b;
-	}
-//	delete sineWave;
-//	delete gain;
-//	delete saturation;
-//	delete busCreator;
-//	delete scope;
-	showAllBlocksInfotation();
 }
 
 operation showAllBlocksInfotation(){
@@ -89,13 +88,142 @@ operation showAllBlocksInfotation(){
 	}
 }
 
+@cached
+operation getAllLines() {
+	return Line.all();
+}
+
+@cached
+operation getAllBlocks() {
+	return Block.all();
+}
+
+operation getPortNumber(element: Any, line: Any) {
+	var inports = element.getInports();
+	var i = 1;
+	for(port in inports) {
+		if(port.getLines().contains(line)) {
+			return i;
+		}
+		i++;
+	}
+}
+
+
+operation attachRandToElement(element: Any, index: Integer) {
+	//get lines sequence from map
+	var lines = map.get(element.handle);
+	
+	//create random and get the sum (which connects the element, and the target)
+	var rand = createRand();
+	var sum = rand.at(1);
+	
+	
+	//get the line struct at the specific index
+	var line = lines.at(index-1);
+	line.println();
+	//get the line
+	var l = line.at(0);
+	//get the target the line connects
+	var target = line.at(1);
+	
+	var i = getPortNumber(target, l);
+	
+	i.println();
+	
+//	var dport = l.getDestinationPort();
+//	dport.println();
+	
+	//delete l
+	delete l;
+	
+	//connect sum to target (using the same index)
+	sum.linkTo(target, i);
+	//connect element to sum (using index)
+	element.linkTo(sum, 2);
+	
+	//put the rand in the map
+	randMap.put(element, rand);
+	
+	//extended property to record the previous target
+	element.~target = target;
+}
+
+operation removeRandFromElement(element: Any, index: Integer) {
+	//get the rand for the element
+	var rand = randMap.get(element);
+	
+	if(rand.isDefined()) {
+		//if rand is defined, the ~target property must be set
+		var target = element.~target;
+		
+		//get the sum
+		var sum = rand.at(1);
+		
+		//disconnect the sum first
+		element.unlinkTo(sum, index);
+		
+		//connect element to its original target
+		element.linkTo(target, index);
+		
+		//remove the random sequence{rand, sum}
+		removeRand(rand);
+	}
+	
+}
+
+/*
+*This function removes the rand
+*/
+operation removeRand(seq: Sequence) {
+	var rand = seq.at(0);
+	var line = getLinesFrom(rand).at(0);
+	var sum = seq.at(1);
+	delete rand;
+	delete sum;
+	delete line;
+}
+
+operation populateMap() {
+	var blocks = getAllBlocks();
+	for(b in blocks) {
+		var seq = getLinesFrom(b);
+		map.put(b.handle, seq);
+	}
+}
+
+/*
+*This function returns a Sequence{Sequence{}}, containing pairs of {line, target} for the source
+*/
 operation getLinesFrom(element: Any) {
 	var ret = new Sequence;
-	var lines = Line.all();
+	var lines = getAllLines();
 	for(l in lines) {
-		if(l.getSource = element) {
-			ret.add(l);
+		if(l.getSource() = element) {
+			var pair = new Sequence;
+			pair.add(l);
+			pair.add(l.getDestination());
+			ret.add(pair);
 		}
 	}
+//	(element + ": " + ret).println();
+	return ret;
+}
+
+
+/*
+*This function creates the random number and the sum and return them as Sequence{rand, sum}
+*/
+operation createRand() {
+	var ret = new Sequence;
+	var rand = new `simulink/Sources/Uniform Random Number`;
+	var sum = new `simulink/Math Operations/Sum`;
+	
+//	var const = new `simulink/Sources/Constant`;
+//	const.link(sum, 0);
+
+	rand.link(sum);
+	ret.add(rand);
+	ret.add(sum);
 	return ret;
 }
