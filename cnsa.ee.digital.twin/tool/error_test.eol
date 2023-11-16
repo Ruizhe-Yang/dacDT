@@ -131,6 +131,53 @@ operation attachRandToElement(element: Any, index: Integer) {
 }
 
 /*
+* Ruizhe to Implement: fluctuation is percentage of fluctuation
+*/
+operation attachRandToElement(element: Any, index: Integer, fluctuation: Real) {
+	//get lines sequence from map
+	var lines = map.get(element.handle);
+	
+	//create random and get the sum (which connects the element, and the target)
+	var rand = createRand();
+	var sum = rand.at(1);
+	
+	//get the line struct at the specific index
+	var line = lines.at(index-1);
+	line.println();
+	//get the line
+	var l = line.at(0);
+	//get the target the line connects
+	var target = line.at(1);
+	
+	//this algorithm gets the port number from the target
+	var i = getPortNumber(target, l);
+	
+	i.println();
+	
+	//delete l
+	delete l;
+	
+	//connect sum to target (using the same index)
+	sum.linkTo(target, i);
+	//connect element to sum (using index)
+	element.linkTo(sum, 2);
+	
+	//extended property to record the previous target
+	element.~target = target;
+	//record the rand associated to the element
+	element.~rand = rand;
+	//record the target port number 
+	element.~linkIndex = i;
+}
+
+/*
+* Ruizhe to implement
+*/
+operation getValueOfBlock(element: Any) {
+}
+
+
+/*
 * This function removes the rand from the element, and cleans up the extended properties
 */
 operation removeRandFromElement(element: Any) {
