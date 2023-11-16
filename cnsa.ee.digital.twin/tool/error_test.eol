@@ -1,7 +1,6 @@
 import "simulink2dt.eol";
 
 var map = new Map;
-var randMap = new Map;
 
 "Begin run...".println();
 createElements();
@@ -57,68 +56,26 @@ operation createElements(){
 	
 	
 	populateMap();
-//	sineWave.handle.println();
-//	map.keySet().println();
-//	map.keySet().contains(sineWave).println();
-//	map.get(sineWave.handle).println();
 	attachRandToElement(sineWave, 1);
 	removeRandFromElement(sineWave);
-	
-//	for (b in S!Block.all){
-//		var lines = getLinesFrom(b);
-//		for(l in lines) {
-//			delete l;
-//		}
-//		delete b;
-//	}
-//	showAllBlocksInfotation();
 }
 
-operation showAllBlocksInformation(){
-	var blocks = S!Block.all;
-//	blocks.println();
-	for (b in blocks){
-		"_______________________________________________".println();
-		b.println();
-		("b.Path                = "+b.Path).println();
-		("b.Position            = "+b.Position).println();
-		("b.Name                = "+b.Name).println();
-		("b.Handle              = "+b.Handle).println();
-		("b.BlockType           = "+b.BlockType).println();
-		("b.PortHandles.Inport  = "+b.PortHandles.Inport).println();
-		("b.PortHandles.Outport = "+b.PortHandles.Outport).println();
-//		("b.PortHandles.Enable  = "+b.PortHandles.Enable).println();
-//		("b.PortHandles.Trigger = "+b.PortHandles.Trigger).println();
-//		("b.PortHandles.State   = "+b.PortHandles.State).println();
-		("b.PortHandles.LConn   = "+b.PortHandles.LConn).println();
-		("b.PortHandles.RConn   = "+b.PortHandles.RConn).println();
-//		("b.PortHandles.Ifaction= "+b.PortHandles.Ifaction).println();
-//		("b.PortHandles.Reset   = "+b.PortHandles.Reset).println();
-//		("b.PortHandles.Event   = "+b.PortHandles.Event).println();
-		for (line in b.portconnectivity){
-			if (line.isDefined()){
-				"+++++++++++++++++++++++".println();
-				("line                  = "+line).println();
-				("line.Position         = "+line.Position).println();
-				("line.SrcBlock         = "+line.SrcBlock).println();
-				("line.SrcPort          = "+line.SrcPort).println();
-				("line.DstBlock         = "+line.DstBlock).println();
-				("line.DstPort          = "+line.DstPort).println();
-			}
-		}
-	}
-}
 
+//cached for dynamic programming
 @cached
 operation getAllLines() {
 	return Line.all();
 }
 
+//cached for dynamic programming
 @cached
 operation getAllBlocks() {
 	return Block.all();
 }
 
+/*
+* This function gets the port number of the line, by counting, there is no better way of doing this
+*/
 operation getPortNumber(element: Any, line: Any) {
 	var inports = element.getInports();
 	var i = 1;
@@ -130,7 +87,12 @@ operation getPortNumber(element: Any, line: Any) {
 	}
 }
 
-
+/*
+* This function creates a rand interference and connects the rand like so: 
+* element -> sum
+* rand -> sum
+* sum -> target
+*/
 operation attachRandToElement(element: Any, index: Integer) {
 	//get lines sequence from map
 	var lines = map.get(element.handle);
@@ -160,15 +122,17 @@ operation attachRandToElement(element: Any, index: Integer) {
 	//connect element to sum (using index)
 	element.linkTo(sum, 2);
 	
-	//put the rand in the map
-	randMap.put(element, rand);
-	
 	//extended property to record the previous target
 	element.~target = target;
+	//record the rand associated to the element
 	element.~rand = rand;
+	//record the target port number 
 	element.~linkIndex = i;
 }
 
+/*
+* This function removes the rand from the element, and cleans up the extended properties
+*/
 operation removeRandFromElement(element: Any) {
 	var target = element.~target;
 	if(target.isDefined()) {
@@ -180,6 +144,7 @@ operation removeRandFromElement(element: Any) {
 		element.unlinkTo(sum, 2);
 		element.linkTo(target, linkIndex);
 		deleteRand(rand);
+		//clean up extended proeprty
 		element.~target = null;
 		element.~rand = null;
 		element.~linkIndex = null;
@@ -258,4 +223,38 @@ operation createRand() {
 	return ret;
 }
 
+operation showAllBlocksInformation(){
+	var blocks = S!Block.all;
+//	blocks.println();
+	for (b in blocks){
+		"_______________________________________________".println();
+		b.println();
+		("b.Path                = "+b.Path).println();
+		("b.Position            = "+b.Position).println();
+		("b.Name                = "+b.Name).println();
+		("b.Handle              = "+b.Handle).println();
+		("b.BlockType           = "+b.BlockType).println();
+		("b.PortHandles.Inport  = "+b.PortHandles.Inport).println();
+		("b.PortHandles.Outport = "+b.PortHandles.Outport).println();
+//		("b.PortHandles.Enable  = "+b.PortHandles.Enable).println();
+//		("b.PortHandles.Trigger = "+b.PortHandles.Trigger).println();
+//		("b.PortHandles.State   = "+b.PortHandles.State).println();
+		("b.PortHandles.LConn   = "+b.PortHandles.LConn).println();
+		("b.PortHandles.RConn   = "+b.PortHandles.RConn).println();
+//		("b.PortHandles.Ifaction= "+b.PortHandles.Ifaction).println();
+//		("b.PortHandles.Reset   = "+b.PortHandles.Reset).println();
+//		("b.PortHandles.Event   = "+b.PortHandles.Event).println();
+		for (line in b.portconnectivity){
+			if (line.isDefined()){
+				"+++++++++++++++++++++++".println();
+				("line                  = "+line).println();
+				("line.Position         = "+line.Position).println();
+				("line.SrcBlock         = "+line.SrcBlock).println();
+				("line.SrcPort          = "+line.SrcPort).println();
+				("line.DstBlock         = "+line.DstBlock).println();
+				("line.DstPort          = "+line.DstPort).println();
+			}
+		}
+	}
+}
 
