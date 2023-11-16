@@ -62,7 +62,7 @@ operation createElements(){
 //	map.keySet().contains(sineWave).println();
 //	map.get(sineWave.handle).println();
 	attachRandToElement(sineWave, 1);
-	
+	removeRandFromElement(sineWave);
 	
 //	for (b in S!Block.all){
 //		var lines = getLinesFrom(b);
@@ -139,7 +139,6 @@ operation attachRandToElement(element: Any, index: Integer) {
 	var rand = createRand();
 	var sum = rand.at(1);
 	
-	
 	//get the line struct at the specific index
 	var line = lines.at(index-1);
 	line.println();
@@ -148,12 +147,10 @@ operation attachRandToElement(element: Any, index: Integer) {
 	//get the target the line connects
 	var target = line.at(1);
 	
+	//this algorithm gets the port number from the target
 	var i = getPortNumber(target, l);
 	
 	i.println();
-	
-//	var dport = l.getDestinationPort();
-//	dport.println();
 	
 	//delete l
 	delete l;
@@ -168,43 +165,40 @@ operation attachRandToElement(element: Any, index: Integer) {
 	
 	//extended property to record the previous target
 	element.~target = target;
+	element.~rand = rand;
+	element.~linkIndex = i;
 }
 
-operation removeRandFromElement(element: Any, index: Integer) {
-	//get the rand for the element
-	var rand = randMap.get(element);
-	
-	if(rand.isDefined()) {
-		//if rand is defined, the ~target property must be set
-		var target = element.~target;
+operation removeRandFromElement(element: Any) {
+	var target = element.~target;
+	if(target.isDefined()) {
+		var rand = element.~rand;
+		var linkIndex = element.~linkIndex;
 		
-		//get the sum
 		var sum = rand.at(1);
-		
-		//disconnect the sum first
-		element.unlinkTo(sum, index);
-		
-		//connect element to its original target
-		element.linkTo(target, index);
-		
-		//remove the random sequence{rand, sum}
-		removeRand(rand);
+		sum.unlinkTo(target, linkIndex);
+		element.unlinkTo(sum, 2);
+		element.linkTo(target, linkIndex);
+		deleteRand(rand);
+		element.~target = null;
+		element.~rand = null;
+		element.~linkIndex = null;
 	}
-	
 }
 
 /*
 *This function removes the rand
 */
-operation removeRand(seq: Sequence) {
+operation deleteRand(seq: Sequence) {
 	var rand = seq.at(0);
-	var line = getLinesFrom(rand).at(0);
 	var sum = seq.at(1);
+	var line = seq.at(2);
 	delete rand;
 	delete sum;
 	delete line;
 }
 
+//generate the map for blocks, the map is {key: b.handle, Sequence{line}}
 operation populateMap() {
 	var blocks = getAllBlocks();
 	for(b in blocks) {
@@ -246,5 +240,22 @@ operation createRand() {
 	rand.link(sum);
 	ret.add(rand);
 	ret.add(sum);
+	
+	var line;
+	var inports = sum.getInports();
+	for(port in inports) {
+		for(l in port.getLines()) {
+			if(l.getSource = rand) {
+				line = l;
+				break;
+			}
+		}
+	}
+	if(line.isDefined()) {
+		ret.add(line);
+	}
+	
 	return ret;
 }
+
+
