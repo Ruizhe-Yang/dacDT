@@ -1,7 +1,10 @@
 var map = new Map;
 
 "Begin run...".println();
-createElements();
+var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+r1.println();
+r2.println();
 "Run done!".println();
 
 operation createElements(){
