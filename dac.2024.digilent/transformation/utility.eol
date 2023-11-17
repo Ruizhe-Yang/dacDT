@@ -1,0 +1,321 @@
+var map = new Map;
+
+"Begin run...".println();
+createElements();
+"Run done!".println();
+
+operation createElements(){
+	// Create elements
+	var sineWave = new `simulink/Sources/Sine Wave`;
+	var gain = new `simulink/Math Operations/Gain`;
+	var saturation = new `simulink/Discontinuities/Saturation`;
+	var busCreator = new `simulink/Signal Routing/Bus Creator`;
+	var scope = new `simulink/Sinks/Scope`;
+
+	// Position them on the diagram
+	sineWave.position = "[100 100 130 130]";
+	gain.position = "[200 100 230 130]";
+	saturation.position = "[300 100 330 130]";
+	busCreator.position = "[400 70 410 300]";
+	scope.position = "[500 175 530 205]";
+	
+	// Set their properties
+	gain.gain = 2;
+	busCreator.inputs = 3;
+	
+	// Link them
+	sineWave.link(gain);
+	gain.link(saturation);
+	saturation.link(busCreator);
+	gain.linkTo(busCreator, 2);
+	sineWave.linkTo(busCreator, 3);
+	busCreator.link(scope);
+	
+	
+	populateMap();
+	attachRandToElement(sineWave, 1);
+	removeRandFromElement(sineWave);
+}
+
+
+//cached for dynamic programming
+@cached
+operation getAllLines() {
+	return Line.all();
+}
+
+//cached for dynamic programming
+@cached
+operation getAllBlocks() {
+	return Block.all();
+}
+
+/*
+* This function gets the port number of the line, by counting, there is no better way of doing this
+*/
+operation getPortNumber(element: Any, line: Any) {
+	var inports = element.getInports();
+	var i = 1;
+	for(port in inports) {
+		if(port.getLines().contains(line)) {
+			return i;
+		}
+		i++;
+	}
+}
+
+/*
+* This function creates a rand interference and connects the rand like so: 
+* element -> sum
+* rand -> sum
+* sum -> target
+*/
+operation attachRandToElement(element: Any, index: Integer) {
+	//get lines sequence from map
+	var lines = map.get(element.handle);
+	
+	//create random and get the sum (which connects the element, and the target)
+	var rand = createRand();
+	var sum = rand.at(1);
+	
+	//get the line struct at the specific index
+	var line = lines.at(index-1);
+	line.println();
+	//get the line
+	var l = line.at(0);
+	//get the target the line connects
+	var target = line.at(1);
+	
+	//this algorithm gets the port number from the target
+	var i = getPortNumber(target, l);
+	
+	i.println();
+	
+	//delete l
+	delete l;
+	
+	//connect sum to target (using the same index)
+	sum.linkTo(target, i);
+	//connect element to sum (using index)
+	element.linkTo(sum, 2);
+	
+	//extended property to record the previous target
+	element.~target = target;
+	//record the rand associated to the element
+	element.~rand = rand;
+	//record the target port number 
+	element.~linkIndex = i;
+}
+
+/*
+* Ruizhe to Implement: fluctuation is percentage of fluctuation
+*/
+operation attachRandToElement(element: Any, index: Integer, fluctuation: Real) {
+	//get lines sequence from map
+	var lines = map.get(element.handle);
+	
+	//create random and get the sum (which connects the element, and the target)
+	var rand = createRand();
+	var sum = rand.at(1);
+	
+	//get the line struct at the specific index
+	var line = lines.at(index-1);
+	line.println();
+	//get the line
+	var l = line.at(0);
+	//get the target the line connects
+	var target = line.at(1);
+	
+	//this algorithm gets the port number from the target
+	var i = getPortNumber(target, l);
+	
+	i.println();
+	
+	//delete l
+	delete l;
+	
+	//connect sum to target (using the same index)
+	sum.linkTo(target, i);
+	//connect element to sum (using index)
+	element.linkTo(sum, 2);
+	
+	//extended property to record the previous target
+	element.~target = target;
+	//record the rand associated to the element
+	element.~rand = rand;
+	//record the target port number 
+	element.~linkIndex = i;
+}
+
+/*
+* Ruizhe to implement
+*/
+operation getValueOfBlock(element: Any) {
+}
+
+
+/*
+* This function removes the rand from the element, and cleans up the extended properties
+*/
+operation removeRandFromElement(element: Any) {
+	var target = element.~target;
+	if(target.isDefined()) {
+		var rand = element.~rand;
+		var linkIndex = element.~linkIndex;
+		
+		var sum = rand.at(1);
+		sum.unlinkTo(target, linkIndex);
+		element.unlinkTo(sum, 2);
+		element.linkTo(target, linkIndex);
+		deleteRand(rand);
+		//clean up extended proeprty
+		element.~target = null;
+		element.~rand = null;
+		element.~linkIndex = null;
+	}
+}
+
+/*
+*This function removes the rand
+*/
+operation deleteRand(seq: Sequence) {
+	var rand = seq.at(0);
+	var sum = seq.at(1);
+	var line = seq.at(2);
+	delete rand;
+	delete sum;
+	delete line;
+}
+
+//generate the map for blocks, the map is {key: b.handle, Sequence{line}}
+operation populateMap() {
+	var blocks = getAllBlocks();
+	for(b in blocks) {
+		var seq = getLinesFrom(b);
+		map.put(b.handle, seq);
+	}
+}
+
+/*
+*This function returns a Sequence{Sequence{}}, containing pairs of {line, target} for the source
+*/
+operation getLinesFrom(element: Any) {
+	var ret = new Sequence;
+	var lines = getAllLines();
+	for(l in lines) {
+		if(l.getSource() = element) {
+			var pair = new Sequence;
+			pair.add(l);
+			pair.add(l.getDestination());
+			ret.add(pair);
+		}
+	}
+//	(element + ": " + ret).println();
+	return ret;
+}
+
+
+operation createVariableResistor() {
+	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
+	return vr;
+}
+
+/*
+*This function creates the random number and the sum and return them as Sequence{rand, sum, step, line(rand, sum), line(step, sum)}
+*/
+operation createRand() {
+	var ret = new Sequence;
+	var rand = new `simulink/Sources/Random Number`;
+	var sum = new `simulink/Math Operations/Sum`;
+	var step = new `simulink/Sources/Step`;
+	var converter = new `nesl_utility/Simulink-PS Converter`;
+	
+//	var const = new `simulink/Sources/Constant`;
+//	const.link(sum, 0);
+
+	//rand:1, step: 2
+	rand.linkTo(sum, 1);
+	step.linkTo(sum, 2);
+	ret.add(rand);
+	ret.add(sum);
+	ret.add(step);
+	
+	var line1;
+	var inports = sum.getInports();
+	for(port in inports) {
+		for(l in port.getLines()) {
+			if(l.getSource = rand) {
+				line1 = l;
+				break;
+			}
+		}
+	}
+	if(line1.isDefined()) {
+		ret.add(line1);
+	}
+	
+	var line2;
+	var inports = sum.getInports();
+	for(port in inports) {
+		for(l in port.getLines()) {
+			if(l.getSource = step) {
+				line2 = l;
+				break;
+			}
+		}
+	}
+	if(line2.isDefined()) {
+		ret.add(line2);
+	}
+	
+	sum.linkTo(converter);
+		
+	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
+	var port = vr.PortHandles.LConn.first;
+	sum.linkTo(vr, port);
+	
+//	var line3;
+//	var inports = vr.getInports();
+//	for(port in inports) {
+//		for(l in port.getLines()) {
+//			if(l.getSource = sum) {
+//				line3 = l;
+//				break;
+//			}
+//		}
+//	}
+//	if(line3.isDefined()) {
+//		ret.add(line3);
+//	}
+	
+	return ret;
+}
+
+operation getResistors() {
+	return getAllBlocks().select(b|b.Name = "Resistor");
+}
+
+operation getCapacitors() {
+	return getAllBlocks().select(b|b.Name = "Capacitor");
+}
+
+operation getInductors() {
+	return getAllBlocks().select(b|b.Name = "Inductor");
+}
+
+operation getCurrentSensors() {
+	return getAllBlocks().select(b|b.Name = "Current Sensor");
+}
+
+operation getScopes() {
+	return Scope.all();
+}
+
+operation getSolvers() {
+	return getAllBlocks().select(b|b.Name = "Solver Configuration");
+}
+
+operation getToWorkspace() {
+	return getAllBlocks().select(b|b.Name = "To Workspace");
+}
+
