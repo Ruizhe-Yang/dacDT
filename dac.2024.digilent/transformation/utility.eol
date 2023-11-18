@@ -5,6 +5,7 @@ var map = new Map;
 //var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
 //r1.println();
 //r2.println();
+//r1.link(r2, 1.0, 2.0);
 createElements();
 "Run done!".println();
 
@@ -35,7 +36,7 @@ operation createElements(){
 	sineWave.linkTo(busCreator, 3);
 	busCreator.link(scope);
 	
-	sineWave.linkTod(gain, 1.0, 2.0);
+	sineWave.linkTo(gain, 1.0, 2.0);
 	
 //	populateMap();
 //	attachRandToElement(sineWave, 1);

@@ -189,6 +189,28 @@ public class SimulinkBlock extends SimulinkElement {
 		}
 	}
 	
+	public void linkTo(SimulinkBlock other, float rconn, float lconn) throws EolRuntimeException {
+		manageLink(other, rconn, lconn, true);
+	}
+	
+	public void linkTo(SimulinkBlock other, double rconn, double lconn) throws EolRuntimeException {
+		manageLink(other, rconn, lconn, true);
+	}
+	
+	public void manageLink(SimulinkBlock other, double rconn, double lconn, boolean create) throws EolRuntimeException {
+		String command = "sourceHandle = ?;" + "targetHandle = ?;"
+				+ "OutPortHandles = get_param(sourceHandle,'PortHandles');"
+				+ "InPortHandles = get_param(targetHandle,'PortHandles');"
+				+ "?_line('?',OutPortHandles.RConn(?),InPortHandles.LConn(?));";
+		try {
+			engine.eval(command, getHandle(), other.getHandle(), create ? CREATE : DELETE, getParentPath(), rconn,
+					lconn);
+			engine.flush();
+		} catch (MatlabException ex) {
+			throw ex.toEolRuntimeException();
+		}
+	}
+	
 	public SimulinkPortCollection getPorts() throws EolRuntimeException {
 		try {
 			Struct portHandles  = (Struct) engine.evalWithSetupAndResult("handle = ?;",  "get_param(handle, 'PortHandles');",
