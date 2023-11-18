@@ -482,6 +482,11 @@ operation getReading(simout : String) {
 	return s;
 }
 
+@cached
+operation getEngine() {
+	return M.engine;
+}
+
 operation showAllBlocksInformation(){
 //	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
 //	vr.println();
