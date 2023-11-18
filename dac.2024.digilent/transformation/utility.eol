@@ -3,19 +3,21 @@ var map = new Map;
 "Begin run...".println();
 
 var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-//var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-//var rconn = r1.PortHandles.RConn;
-//rconn.println();
-//var lconn = r2.PortHandles.LConn;
-//lconn.println();
-//r1.linkTo(r2, rconn, lconn);
-//r2.println();
-var a = createRand();
-for (aa in a){
-	aa.println();
-}
+var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+var r3 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+var rconn = r1.PortHandles.RConn;
+var lconn = r2.PortHandles.LConn;
+r1.linkTo(r2, rconn, lconn);
+var rconn = r2.PortHandles.RConn;
+var lconn = r3.PortHandles.LConn;
+r2.linkTo(r3, rconn, lconn);
+replaceResistor(r2);
+//var a = createRand();
+//for (aa in a){
+//	aa.println();
+//}
 
-//showAllBlocksInformation();
+showAllBlocksInformation();
 
 //var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
 //var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
@@ -31,20 +33,25 @@ operation replaceResistor(resistor: Any) {
 	var vr = rand.at(7);
 	var rrconn = resistor.PortHandles.RConn;
 	var rlconn = resistor.PortHandles.LConn;
-	var rl = rrconn.getlines().first;
-	var target = rl.getDestination();
-	var target_lconn = rl.getDestinationPort();
-	target.println();
-	var ll = rlconn.getlines().first;
-	var source = ll.getSource();
-	var source_rconn = ll.getSourcePort();
+	var rl = resistor.getLConns().first().getlines().first;
+	var source = rl.getSource();
+	var source_rconn = rl.getSourcePort().handle;
+	
+	var rr = resistor.getRConns().first().getlines().first;
+	var target = rr.getDestination();
+	var target_lconn = rr.getDestinationPort().handle;
+	rl.println();
 	source.println();
+	source_rconn.println();
+	rr.println();
+	target.println();
+	target_lconn.println();
 	
 	var vrl = vr.PortHandles.LConn.second;
-	var vrr = vr.PortHandles.RConn.first;
+	var vrr = vr.PortHandles.RConn;
 	
 	delete rl;
-	delete ll;
+	delete rr;
 	delete resistor;
 	
 	vr.linkTo(target, vrr, target_lconn);
