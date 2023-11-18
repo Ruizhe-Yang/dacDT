@@ -81,8 +81,9 @@ operation restoreResistor(resistor) {
 	var vrrl = vr.getRConns().first().getLines().second;
 	var vrll = vr.getLConns().second().getLines().second;
 	
-	resistor.linkTo(target, resistor.~rconn, target_lconn);
-	source.linkTo(resistor, source_rconn, resistor.~lconn);
+//	var resistor = new `fl_lib/Electrical/Electrical Elements/Resistor`; 
+	resistor.linkTo(target, resistor.~rconn, resistor.~target_lconn);
+	source.linkTo(resistor, resistor.~source_rconn, resistor.~lconn);
 	
 	delete vrrl;
 	delete vrll;
@@ -109,6 +110,11 @@ operation replaceResistor(resistor: Any) {
 	rr.println();
 	target.println();
 	target_lconn.println();
+	
+	resistor.~target = target;
+	resistor.~source = source;
+	resistor.~target_lconn = target_lconn;
+	resistor.~source_rconn = source_rconn;
 	
 	var vrl = vr.PortHandles.LConn.second;
 	var vrr = vr.PortHandles.RConn;
