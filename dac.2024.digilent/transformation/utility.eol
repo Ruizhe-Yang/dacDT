@@ -1,10 +1,11 @@
 var map = new Map;
 
 "Begin run...".println();
-var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-r1.println();
-r2.println();
+//var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//r1.println();
+//r2.println();
+createElements();
 "Run done!".println();
 
 operation createElements(){
@@ -35,9 +36,9 @@ operation createElements(){
 	busCreator.link(scope);
 	
 	
-	populateMap();
-	attachRandToElement(sineWave, 1);
-	removeRandFromElement(sineWave);
+//	populateMap();
+//	attachRandToElement(sineWave, 1);
+//	removeRandFromElement(sineWave);
 }
 
 

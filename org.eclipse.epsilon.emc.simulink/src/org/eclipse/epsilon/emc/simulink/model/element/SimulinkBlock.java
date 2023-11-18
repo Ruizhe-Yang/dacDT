@@ -143,10 +143,12 @@ public class SimulinkBlock extends SimulinkElement {
 	}
 
 	public void link(SimulinkBlock other) throws EolRuntimeException {
+		System.err.println("This is run");
 		link(other, 1, 1);
 	}
 
 	public void linkTo(SimulinkBlock other, int inPort) throws EolRuntimeException {
+		System.out.println("This is run");
 		link(other, 1, inPort);
 	}
 
