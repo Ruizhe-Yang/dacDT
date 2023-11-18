@@ -201,7 +201,7 @@ public class SimulinkBlock extends SimulinkElement {
 		String command = "sourceHandle = ?;" + "targetHandle = ?;"
 				+ "OutPortHandles = get_param(sourceHandle,'PortHandles');"
 				+ "InPortHandles = get_param(targetHandle,'PortHandles');"
-				+ "?_line('?',OutPortHandles.RConn(?),InPortHandles.LConn(?));";
+				+ "?_line('?', ?, ?);";
 		try {
 			engine.eval(command, getHandle(), other.getHandle(), create ? CREATE : DELETE, getParentPath(), rconn,
 					lconn);

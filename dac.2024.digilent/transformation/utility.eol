@@ -2,15 +2,16 @@ var map = new Map;
 
 "Begin run...".println();
 
-var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-var rconn = r1.PortHandles.RConn;
-rconn.type.println();
-var lconn = r2.PortHandles.LConn;
-lconn.type.println();
-r1.linkTo(r2, rconn, lconn);
-r1.println();
-r2.println();
+//var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var rconn = r1.PortHandles.RConn;
+//rconn.println();
+//var lconn = r2.PortHandles.LConn;
+//lconn.println();
+//r1.linkTo(r2, rconn, lconn);
+//r1.println();
+//r2.println();
+createRand();
 showAllBlocksInformation();
 
 //var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
@@ -18,7 +19,7 @@ showAllBlocksInformation();
 //r1.println();
 //r2.println();
 //r1.link(r2, 1.0, 2.0);
-createElements();
+//createElements();
 
 "Run done!".println();
 
@@ -287,11 +288,12 @@ operation createRand() {
 		ret.add(line2);
 	}
 	
-	sum.linkTo(converter);
+	sum.linkTo(converter, 1);
 		
 	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
-	var port = vr.PortHandles.LConn.first;
-	sum.linkTo(vr, port);
+	var lconn = vr.PortHandles.LConn.first;
+	var rconn = converter.PortHandles.RConn;
+	sum.linkTo(vr, rconn, lconn);
 	
 //	var line3;
 //	var inports = vr.getInports();
