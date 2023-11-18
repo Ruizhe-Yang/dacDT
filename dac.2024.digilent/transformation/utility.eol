@@ -40,10 +40,10 @@ operation demo1() {
 //	init();
 	
 	var r = getAllBlocks().select(s|s.Name = "Resistor2").first();
-	replaceResistor(r.Name);
+	replaceResistor(r);
 	simulate();
 	var reading = getReading("u");
-	restoreResistor(handle);
+	restoreResistor(r);
 	original_reading.println();
 	reading.println();
 }
@@ -70,7 +70,7 @@ operation simulate() {
 }
 
 
-operation restoreResistor(name) {
+operation restoreResistor(resistor) {
 	var rand = getRand();
 	var vr = rand.at(7);
 	var source_rconn = vr.~source_rconn;
@@ -81,11 +81,9 @@ operation restoreResistor(name) {
 	var vrrl = vr.getRConns().first().getLines().second;
 	var vrll = vr.getLConns().second().getLines().second;
 	
-	var resistor = resistorCache.get(name);
 //	var resistor = new `fl_lib/Electrical/Electrical Elements/Resistor`; 
 	resistor.linkTo(target, vr.~vrr, target_lconn);
 	source.linkTo(resistor, source_rconn, vr.~vrl);
-	
 	
 	delete vrrl;
 	delete vrll;
