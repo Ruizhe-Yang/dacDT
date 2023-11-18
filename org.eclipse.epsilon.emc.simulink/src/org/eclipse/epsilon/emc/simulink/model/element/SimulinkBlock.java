@@ -148,7 +148,6 @@ public class SimulinkBlock extends SimulinkElement {
 	}
 
 	public void linkTo(SimulinkBlock other, int inPort) throws EolRuntimeException {
-		System.out.println("This is run");
 		link(other, 1, inPort);
 	}
 
@@ -190,14 +189,13 @@ public class SimulinkBlock extends SimulinkElement {
 		}
 	}
 	
-	public void linkTo(SimulinkBlock other, double rconn, double lconn) throws EolRuntimeException {
+	public void linkTo(SimulinkBlock other, float rconn, float lconn) throws EolRuntimeException {
 		manageLink(other, rconn, lconn, true);
 	}
 	
-	public void unlinkTo(SimulinkBlock other, double rconn, double lconn) throws EolRuntimeException {
-		manageLink(other, rconn, lconn, false);
+	public void linkTo(SimulinkBlock other, double rconn, double lconn) throws EolRuntimeException {
+		manageLink(other, rconn, lconn, true);
 	}
-
 	
 	public void manageLink(SimulinkBlock other, double rconn, double lconn, boolean create) throws EolRuntimeException {
 		String command = "sourceHandle = ?;" + "targetHandle = ?;"
