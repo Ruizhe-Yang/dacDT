@@ -6,6 +6,7 @@ var original_reading;
 
 
 "Begin run...".println();
+//showAllBlocksInformation();
 demo1();
 //var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
 //var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
@@ -490,7 +491,7 @@ operation getEngine() {
 operation showAllBlocksInformation(){
 //	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
 //	vr.println();
-	var blocks = S!Block.all;
+	var blocks = M!Block.all;
 //	blocks.println();
 	for (b in blocks){
 		"_______________________________________________".println();
