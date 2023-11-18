@@ -2,7 +2,7 @@ var map = new Map;
 
 "Begin run...".println();
 
-//var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
 //var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
 //var rconn = r1.PortHandles.RConn;
 //rconn.println();
