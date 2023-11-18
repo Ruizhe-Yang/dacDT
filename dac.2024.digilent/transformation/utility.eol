@@ -71,7 +71,7 @@ operation simulate() {
 
 
 operation restoreResistor(resistor) {
-	var rand = getRand();
+	var rand = createRand();
 	var vr = rand.at(7);
 	var source_rconn = vr.~source_rconn;
 	var target_lconn = vr.~target_lconn;
