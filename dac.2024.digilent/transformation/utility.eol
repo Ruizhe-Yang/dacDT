@@ -35,12 +35,13 @@ demo1();
 "Run done!".println();
 
 operation demo1() {
-	init();
-	var r = getResistors().first();
+//	init();
+	
+	var r = getAllBlocks().select(s|s.Name = "Resistor2").first();
 	var handle = r.handle;
 	replaceResistor(r);
 	simulate();
-	reading = getReading("simout");
+	var reading = getReading("u");
 	restoreResistor(handle);
 	original_reading.println();
 	reading.println();
@@ -52,7 +53,7 @@ operation iterateResistors() {
 		var handle = r.handle;
 		replaceResistor(r);
 		simulate();
-		reading = getReading("simout");
+		reading = getReading("u");
 		restoreResistor(handle);
 	}
 }
@@ -60,7 +61,7 @@ operation iterateResistors() {
 operation init() {
 	save_origin();
 	simulate();
-	original_reading = getReading("simout");
+	original_reading = getReading("u");
 }
 
 operation simulate() {
@@ -175,7 +176,7 @@ operation getAllLines() {
 //cached for dynamic programming
 @cached
 operation getAllBlocks() {
-	return Block.all();
+	return M!Block.all();
 }
 
 /*
@@ -478,8 +479,9 @@ operation save_origin() {
 
 operation getReading(simout : String) {
 	var engine = getEngine();
+//	simout = "result";
 	engine.evalAsync("s = simout.get('"+simout+"')");
-	var s = engine.getVariable("s").last;
+	var s = engine.getVariable("s");
 	return s;
 }
 
