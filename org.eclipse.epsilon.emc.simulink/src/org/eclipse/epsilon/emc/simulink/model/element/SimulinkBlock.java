@@ -197,6 +197,10 @@ public class SimulinkBlock extends SimulinkElement {
 		manageLink(other, rconn, lconn, true);
 	}
 	
+	public void unlinkTo(SimulinkBlock other, double rconn, double lconn) throws EolRuntimeException {
+		manageLink(other, rconn, lconn, false);
+	}
+	
 	public void manageLink(SimulinkBlock other, double rconn, double lconn, boolean create) throws EolRuntimeException {
 		String command = "sourceHandle = ?;" + "targetHandle = ?;"
 				+ "OutPortHandles = get_param(sourceHandle,'PortHandles');"
