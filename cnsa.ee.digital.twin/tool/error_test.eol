@@ -3,8 +3,85 @@ import "simulink2dt.eol";
 var map = new Map;
 
 "Begin run...".println();
-createElements();
+//var sum = new `simulink/Math Operations/Sum`;	
+//var converter = new `nesl_utility/Simulink-PS Converter`; 
+//sum.link(converter);
+//var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
+//converter.link(vr);
+showAllBlocksInformation();
+//createElements();
+//createRand();
+
 "Run done!".println();
+/*
+*This function creates the random number and the sum and return them as Sequence{rand, sum, step, line(rand, sum), line(step, sum)}
+*/
+operation createRand() {
+	var ret = new Sequence;
+	var rand = new `simulink/Sources/Random Number`;
+	var sum = new `simulink/Math Operations/Sum`;
+	var step = new `simulink/Sources/Step`;
+	
+	
+//	var const = new `simulink/Sources/Constant`;
+//	const.link(sum, 0);
+
+	//rand:1, step: 2
+	rand.linkTo(sum, 1);
+	step.linkTo(sum, 2);
+	ret.add(rand);
+	ret.add(sum);
+	ret.add(step);
+	
+	var line1;
+	var inports = sum.getInports();
+	for(port in inports) {
+		for(l in port.getLines()) {
+			if(l.getSource = rand) {
+				line1 = l;
+				break;
+			}
+		}
+	}
+	if(line1.isDefined()) {
+		ret.add(line1);
+	}
+	
+	var line2;
+	var inports = sum.getInports();
+	for(port in inports) {
+		for(l in port.getLines()) {
+			if(l.getSource = step) {
+				line2 = l;
+				break;
+			}
+		}
+	}
+	if(line2.isDefined()) {
+		ret.add(line2);
+	}
+	
+	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
+	var port = vr.PortHandles.LConn.first;
+	sum.linkTo(vr, port);
+	
+	var line3;
+	var inports = vr.getInports();
+	for(port in inports) {
+		for(l in port.getLines()) {
+			if(l.getSource = sum) {
+				line3 = l;
+				break;
+			}
+		}
+	}
+	if(line3.isDefined()) {
+		ret.add(line3);
+	}
+	
+	return ret;
+}
+
 
 operation main(){
 //	for (b in S!Block.all){
@@ -271,6 +348,8 @@ operation createRand() {
 }
 
 operation showAllBlocksInformation(){
+//	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
+//	vr.println();
 	var blocks = S!Block.all;
 //	blocks.println();
 	for (b in blocks){
@@ -304,4 +383,3 @@ operation showAllBlocksInformation(){
 		}
 	}
 }
-
