@@ -6,23 +6,23 @@ var original_reading;
 
 
 "Begin run...".println();
-
-var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-var r3 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-var rconn = r1.PortHandles.RConn;
-var lconn = r2.PortHandles.LConn;
-r1.linkTo(r2, rconn, lconn);
-var rconn = r2.PortHandles.RConn;
-var lconn = r3.PortHandles.LConn;
-r2.linkTo(r3, rconn, lconn);
-replaceResistor(r2);
+demo1();
+//var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var r3 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var rconn = r1.PortHandles.RConn;
+//var lconn = r2.PortHandles.LConn;
+//r1.linkTo(r2, rconn, lconn);
+//var rconn = r2.PortHandles.RConn;
+//var lconn = r3.PortHandles.LConn;
+//r2.linkTo(r3, rconn, lconn);
+//replaceResistor(r2);
 //var a = createRand();
 //for (aa in a){
 //	aa.println();
 //}
 
-showAllBlocksInformation();
+//showAllBlocksInformation();
 
 //var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
 //var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
@@ -32,6 +32,16 @@ showAllBlocksInformation();
 //createElements();
 
 "Run done!".println();
+
+operation demo1() {
+	init();
+	var r = getResistors().first();
+	var handle = r.handle;
+	replaceResistor(r);
+	simulate();
+	reading = getReading("simout");
+	restoreResistor(handle);
+}
 
 operation iterateResistors() {
 	var resistors = getResistors();
