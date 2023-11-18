@@ -41,6 +41,8 @@ operation demo1() {
 	simulate();
 	reading = getReading("simout");
 	restoreResistor(handle);
+	original_reading.println();
+	reading.println();
 }
 
 operation iterateResistors() {
@@ -471,6 +473,13 @@ operation save_origin() {
 	for(l in getInductors()) {
 		original_settings.put(l.Description, l.Inductance);
 	}
+}
+
+operation getReading(simout : String) {
+	var engine = getEngine();
+	engine.evalAsync("s = simout.get('"+simout+"')");
+	var s = engine.getVariable("s").last;
+	return s;
 }
 
 operation showAllBlocksInformation(){
