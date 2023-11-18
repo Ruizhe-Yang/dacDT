@@ -23,6 +23,9 @@ showAllBlocksInformation();
 
 "Run done!".println();
 
+operation replaceResistor(resistor: Any) {
+}
+
 operation createElements(){
 	// Create elements
 	var sineWave = new `simulink/Sources/Sine Wave`;
@@ -290,24 +293,40 @@ operation createRand() {
 	
 	sum.linkTo(converter, 1);
 		
+	var line3;
+	var inports = converter.getInports();
+	for(port in inports) {
+		for(l in port.getLines()) {
+			if(l.getSource = sum) {
+				line3 = l;
+				break;
+			}
+		}
+	}
+	if(line3.isDefined()) {
+		ret.add(line3);
+	}
+
 	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
 	var lconn = vr.PortHandles.LConn.first;
 	var rconn = converter.PortHandles.RConn;
 	sum.linkTo(vr, rconn, lconn);
 	
-//	var line3;
-//	var inports = vr.getInports();
-//	for(port in inports) {
-//		for(l in port.getLines()) {
-//			if(l.getSource = sum) {
-//				line3 = l;
-//				break;
-//			}
-//		}
-//	}
-//	if(line3.isDefined()) {
-//		ret.add(line3);
-//	}
+	ret.add(vr);
+	
+	var line4;
+	var inports = converter.getLConns();
+	for(port in inports) {
+		for(l in port.getLines()) {
+			if(l.getSource = sum) {
+				line4 = l;
+				break;
+			}
+		}
+	}
+	if(line4.isDefined()) {
+		ret.add(line4);
+	}
 	
 	return ret;
 }

@@ -244,5 +244,25 @@ public class SimulinkBlock extends SimulinkElement {
 			throw e.toEolRuntimeException();
 		}
 	}
+	
+	public SimulinkPortCollection getLConns() throws EolRuntimeException {
+		try {
+			Object handles = engine.evalWithSetupAndResult("handle = ?; " + "ph = get_param(handle, 'PortHandles');",
+					"ph.LConn;", this.handle);
+			return new SimulinkPortCollection(handles, ((SimulinkModel)model));
+		} catch (MatlabException e) {
+			throw e.toEolRuntimeException();
+		}
+	}
+	
+	public SimulinkPortCollection getRConns() throws EolRuntimeException {
+		try {
+			Object handles = engine.evalWithSetupAndResult("handle = ?; " + "ph = get_param(handle, 'PortHandles');",
+					"ph.RConn;", this.handle);
+			return new SimulinkPortCollection(handles, ((SimulinkModel)model));
+		} catch (MatlabException e) {
+			throw e.toEolRuntimeException();
+		}
+	}
 
 }
