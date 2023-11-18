@@ -69,21 +69,71 @@ operation simulate() {
 	M.simulate();
 }
 
+operation getLine(source, target) {
+	var lines = getAllLines().select(l|l.getSource() = source and l.getDestination() = target);
+	return lines;
+}
+
+operation matchConn(a: Integer, b: Real) {
+	var c = b.asInteger();
+	if(a = c) {
+		return b;
+	}
+	return -1;
+}
 
 operation restoreResistor(resistor) {
 	var rand = createRand();
 	var vr = rand.at(7);
-	var source_rconn = vr.~source_rconn;
-	var target_lconn = vr.~target_lconn;
-	var source = vr.~source;
-	var target = vr.~target;
+//	var source_rconn = vr.~source_rconn;
+//	var target_lconn = vr.~target_lconn;
+	
+	var source = resistor.~source;
+	var target = resistor.~target;
+	var source_rconn = resistor.~source_rconn;
+	var target_lconn = resistor.~target_lconn;
+	
+	for(lconn in target.getLConns()) {
+		var temp = matchConn(target_lconn, lconn);
+		if(temp <> -1) {
+			target_lconn = temp;
+			break; 
+		}
+	}
+	
+	for(rconn in source.getRConns()) {
+		var temp = matchConn(source_rconn, rconn);
+		if(temp <> -1) {
+			source_rconn = temp;
+			break; 
+		}
+	}
+	
+	var rconn = resistor.~rconn;
+	var lconn = resistor.~lconn;
+	
+	for(lc in resistor.getLConns()) {
+		var temp = matchConn(lconn, lc);
+		if(temp <> -1) {
+			lconn = temp;
+			break; 
+		}
+	}
+	
+	for(rc in resistor.getRConns()) {
+		var temp = matchConn(rconn, rc);
+		if(temp <> -1) {
+			rconn = temp;
+			break; 
+		}
+	}
 	
 	var vrrl = vr.getRConns().first().getLines().second;
 	var vrll = vr.getLConns().second().getLines().second;
 	
 //	var resistor = new `fl_lib/Electrical/Electrical Elements/Resistor`; 
-	resistor.linkTo(target, resistor.~rconn, resistor.~target_lconn);
-	source.linkTo(resistor, resistor.~source_rconn, resistor.~lconn);
+	resistor.linkTo(target, rconn, target_lconn);
+	source.linkTo(resistor, source_rconn, lconn);
 	
 	delete vrrl;
 	delete vrll;
@@ -113,8 +163,8 @@ operation replaceResistor(resistor: Any) {
 	
 	resistor.~target = target;
 	resistor.~source = source;
-	resistor.~target_lconn = target_lconn;
-	resistor.~source_rconn = source_rconn;
+	resistor.~target_lconn = target_lconn.asInteger();
+	resistor.~source_rconn = source_rconn.asInteger();
 	
 	var vrl = vr.PortHandles.LConn.second;
 	var vrr = vr.PortHandles.RConn;
