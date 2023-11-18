@@ -250,10 +250,6 @@ operation createRand() {
 	var step = new `simulink/Sources/Step`;
 	var converter = new `nesl_utility/Simulink-PS Converter`;
 	
-//	var const = new `simulink/Sources/Constant`;
-//	const.link(sum, 0);
-
-	//rand:1, step: 2
 	rand.linkTo(sum, 1);
 	step.linkTo(sum, 2);
 	ret.add(rand);
@@ -287,28 +283,11 @@ operation createRand() {
 	if(line2.isDefined()) {
 		ret.add(line2);
 	}
-	
 	sum.linkTo(converter, 1);
-		
 	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
 	var lconn = vr.PortHandles.LConn.first;
 	var rconn = converter.PortHandles.RConn;
 	sum.linkTo(vr, rconn, lconn);
-	
-//	var line3;
-//	var inports = vr.getInports();
-//	for(port in inports) {
-//		for(l in port.getLines()) {
-//			if(l.getSource = sum) {
-//				line3 = l;
-//				break;
-//			}
-//		}
-//	}
-//	if(line3.isDefined()) {
-//		ret.add(line3);
-//	}
-	
 	return ret;
 }
 
