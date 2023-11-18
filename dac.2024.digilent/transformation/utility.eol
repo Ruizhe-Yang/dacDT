@@ -74,7 +74,8 @@ operation getLine(source, target) {
 	return lines;
 }
 
-operation matchConn(a: Integer, b: Real) {
+operation matchConn(a: Any, b: Real) {
+	a = a.asInteger();
 	var c = b.asInteger();
 	if(a = c) {
 		return b;
