@@ -1,6 +1,7 @@
 var map = new Map;
 
 "Begin run...".println();
+<<<<<<< HEAD
 var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
 var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
 var rconn = r1.PortHandles.RConn;
@@ -11,6 +12,13 @@ r1.linkTo(r2, rconn, lconn);
 r1.println();
 r2.println();
 showAllBlocksInformation();
+=======
+//var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//r1.println();
+//r2.println();
+createElements();
+>>>>>>> b984742bba31cbe1bc532619a90114d292e3be4d
 "Run done!".println();
 
 operation createElements(){
@@ -41,9 +49,9 @@ operation createElements(){
 	busCreator.link(scope);
 	
 	
-	populateMap();
-	attachRandToElement(sineWave, 1);
-	removeRandFromElement(sineWave);
+//	populateMap();
+//	attachRandToElement(sineWave, 1);
+//	removeRandFromElement(sineWave);
 }
 
 
