@@ -1,3 +1,63 @@
+var map = new Map;
+
+var cache = new Map;
+var resistorCache = new Map;
+var original_settings = new Map;
+var original_reading;
+var rand;
+
+
+"Begin run...".println();
+//showAllBlocksInformation();
+demo1();
+//var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var r3 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var rconn = r1.PortHandles.RConn;
+//var lconn = r2.PortHandles.LConn;
+//r1.linkTo(r2, rconn, lconn);
+//var rconn = r2.PortHandles.RConn;
+//var lconn = r3.PortHandles.LConn;
+//r2.linkTo(r3, rconn, lconn);
+//replaceResistor(r2);
+//var a = createRand();
+//for (aa in a){
+//	aa.println();
+//}
+
+//showAllBlocksInformation();
+
+//var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
+//r1.println();
+//r2.println();
+//r1.link(r2, 1.0, 2.0);
+//createElements();
+
+"Run done!".println();
+
+operation demo1() {
+//	init();
+	
+	var r = getAllBlocks().select(s|s.Name = "Resistor2").first();
+	replaceResistor(r);
+	simulate();
+	var reading = getReading("u");
+	restoreResistor(r);
+	original_reading.println();
+	reading.println();
+}
+
+operation iterateResistors() {
+	var resistors = getResistors();
+	for(r in resistors) {
+		var handle = r.handle;
+		replaceResistor(r);
+		simulate();
+		reading = getReading("u");
+		restoreResistor(handle);
+	}
+}
 
 operation init() {
 	save_origin();
@@ -80,240 +140,9 @@ operation restoreResistor(resistor) {
 	delete vrll;
 }
 
-
-
-operation getLinesFrom(rconn) {
-	var lines = getAllLines();
-	return lines.select(l|l.getSourcePort() = rconn).println();
-}
-
-operation getLinesTo(lconn) {
-	var lines = getAllLines();
-	return lines.select(l|l.getDestinationPort() = lconn);
-}
-
-//operation getTargets(element: Any) {
-//	var ret = new Sequence;
-//	for (line in b.portconnectivity){
-//		var dst = line.DstBlock;
-//		if(not dst.isTypeOf(Sequence)) {
-//			dst = dst.asSequence();
-//		}
-//		var dstPort = line.DstPort;
-//		if(not dstPort.isTypeOf(Sequence)) {
-//			dstPort = dstPort.asSequence();
-//		}
-//		for(i in Sequence{0..(dst.size()-1)}) {
-//			var tuple = new Tuple(target = dst.at(i), port = dstPort.at(i));
-//			ret.add(tuple);
-//		}
-//	}
-//	targetMap.put(element.handle, ret);
-//	return ret;
-//}
-
-operation replace(element, newElement) {
-	var lines = getOutLines(element);
-	for(l in lines) {
-		if(l.isDefined()) {
-			l.println();
-			var srcPort = l.getSourcePort();
-		
-			if(isLConn(element, srcPort)) {
-				var lconn = newElement.getLConns().first();
-				l.SrcBlock = newElement;
-				l.SrcPort = lconn;
-//				l.setSourceBlock(newElement.handle);
-//				l.setSourcePort(lconn.handle);
-			}
-			else {
-				var rconn = newElement.getRConns().first();
-				l.SrcBlock = newElement;
-				l.SrcPort = rconn;
-//				l.setSourceBlock(newElement.handle);
-//				l.setSourcePort(rconn.handle);
-			}
-			l.println();
-		}
-		
-	}
-}
-
-operation isLConn(element, conn) {
-	return element.getLConns().contains(conn);
-}
-
-operation isRConn(element, conn) {
-	return element.getRConns().contains(conn);
-}
-
-operation getTarget(handle) {
-	getAllBlocks().selectOne(b|b.handle = handle);// handles are unique
-}
-
-operation disconnectTargets(element: Any) {
-	getTargets(element);
-	var tuples = targetMap.get(element.handle);
-	for(t in tuples) {
-		element.unlinkTo(getTarget(t.target), element.getLConns().first.handle, t.port);
-	}
-}
-
-operation getAllConns(element: Any) {
-	var rconns = element.getRConns();
-	if(not rconns.isTypeOf(Sequence)) {
-		rconns = rconns.asSequence();
-	}
-	var lconns = element.getLConns();
-	if(not lconns.isTypeOf(Sequence)) {
-		lconns = lconns.asSequence();
-	} 
-	var ret = new Sequence;
-	ret.addAll(lconns);
-	ret.addAll(rconns);
-	return ret;
-}
-
-operation getLinesRelated(element) {
-	var conns = getAllConns(element);
-	conns.errln();
-	var lines = getAllLines();
-	var ret = new Sequence;
-	for(conn in conns) {
-		for(line in lines) {
-			if (line.getSourcePort() = conn or line.getTargetPort = conn) {
-				ret.add(line);
-			}
-		}
-	}
-	return ret;
-}
-
-operation getOutLines(element: Any) {
-	var conns = getAllConns(element);
-	var ret = new Sequence;
-	for(line in getAllLines()) {
-		if(line.isDefined()) {
-			for(conn in conns) {
-				if(line.getSourcePort() = conn) {
-					ret.add(line);
-				}
-			}
-		}
-	}
-	return ret;
-}
-
-operation getInLines(element: Any) {
-	var conns = getAllConns(element);
-	var ret = new Sequence;
-	for(line in getAllLines()) {
-		if(line.isDefined()) {
-			for(conn in conns) {
-				if(line.getDestinationPort() = conn) {
-					ret.add(line);
-				}
-			}
-		}
-	}
-	return ret;
-}
-
-//operation getOutLines(element: Any) {
-//	var rconns = element.getRConns();
-//	if(not rconns.isTypeOf(Sequence)) {
-//		rconns = rconns.asSequence();
-//	}
-//	var outgoings = new Sequence();
-//	for(rc in rconns) {
-//		outgoings.addAll(getLinesFrom(rc));
-//	}
-//	return outgoings;
-//}
-//
-//operation getInLines(element: Any) {
-//	var lconns = element.getLConns();
-//	if(not lconns.isTypeOf(Sequence)) {
-//		lconns = lconns.asSequence();
-//	} 
-//	var incomings = new Sequence();
-//	for(lc in lconns) {
-//		incomings.addAll(getLinesTo(lc));
-//	}
-//	return incomings;
-//}
-
-
-operation replaceResistor2(resistor: Any) {
-	//get the rand
-	var rand = createRand();
-	var vr = rand.at(7);
-	
-	var outgoings = getOutLines(resistor);
-	var incomings = getInLines(resistor);
-	
-	for(out in outgoings) {
-		
-	}
-	
-	var rrconn = resistor.PortHandles.RConn;
-	var rlconn = resistor.PortHandles.LConn;
-	var rl = resistor.getLConns().first().getlines().first;
-	var source = rl.getSource();
-	var source_rconn = rl.getSourcePort().handle;
-	
-	resistor.~rconn = rrconn;
-	resistor.~lconn = rlconn;
-	
-	var rr = resistor.getRConns().first().getlines().first;
-	var target = rr.getDestination();
-	var target_lconn = rr.getDestinationPort().handle;
-	rl.println();
-	source.println();
-	source_rconn.println();
-	rr.println();
-	target.println();
-	target_lconn.println();
-	
-	resistor.~target = target;
-	resistor.~source = source;
-	resistor.~target_lconn = target_lconn.asInteger();
-	resistor.~source_rconn = source_rconn.asInteger();
-	
-	var vrl = vr.PortHandles.LConn.second;
-	var vrr = vr.PortHandles.RConn;
-	
-	
-	cache.put(resistor.handle, rand);
-	
-	delete rl;
-	delete rr;
-//	delete resistor;
-	resistorCache.put(resistor.Name, resistor);
-	resistor.~rl = rl;
-	resistor.~rr = rr;
-	
-	
-	vr.linkTo(target, vrr, target_lconn);
-	source.linkTo(vr, source_rconn, vrl);
-	
-	vr.~target = target;
-	vr.~source = source;
-	vr.~target_lconn = target_lconn;
-	vr.~source_rconn = source_rconn;
-	vr.~vrr = vrr;
-	vr.~vrl = vrl;
-}
-
-
-/*
-* NOTE: port handles do not persist across imulations
-*/
 operation replaceResistor(resistor: Any) {
-	//get the rand
 	var rand = createRand();
 	var vr = rand.at(7);
-	
 	var rrconn = resistor.PortHandles.RConn;
 	var rlconn = resistor.PortHandles.LConn;
 	var rl = resistor.getLConns().first().getlines().first;
@@ -508,6 +337,13 @@ operation attachRandToElement(element: Any, index: Integer, fluctuation: Real) {
 }
 
 /*
+* Ruizhe to implement
+*/
+operation getValueOfBlock(element: Any) {
+}
+
+
+/*
 * This function removes the rand from the element, and cleans up the extended properties
 */
 operation removeRandFromElement(element: Any) {
@@ -531,14 +367,14 @@ operation removeRandFromElement(element: Any) {
 /*
 *This function removes the rand
 */
-//operation deleteRand(seq: Sequence) {
-//	var rand = seq.at(0);
-//	var sum = seq.at(1);
-//	var line = seq.at(2);
-//	delete rand;
-//	delete sum;
-//	delete line;
-//}
+operation deleteRand(seq: Sequence) {
+	var rand = seq.at(0);
+	var sum = seq.at(1);
+	var line = seq.at(2);
+	delete rand;
+	delete sum;
+	delete line;
+}
 
 //generate the map for blocks, the map is {key: b.handle, Sequence{line}}
 operation populateMap() {
@@ -567,11 +403,11 @@ operation getLinesFrom(element: Any) {
 	return ret;
 }
 
-//
-//operation createVariableResistor() {
-//	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
-//	return vr;
-//}
+
+operation createVariableResistor() {
+	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
+	return vr;
+}
 
 /*
 *This function creates the random number and the sum and return them as Sequence{rand, sum, step, line(rand, sum), line(step, sum)}

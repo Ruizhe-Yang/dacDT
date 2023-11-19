@@ -1,0 +1,79 @@
+import "utility.eol";
+var targetMap = new Map;
+
+"start".println();
+var blocks = Block.all();
+//for(b in blocks) {
+//	b.println();
+//	"LConns: " + b.getLConns().println();
+//	"RConns: " + b.getRConns().println();
+//	"bbbbbbbbbbbbbbbbbbbb".println();
+//}
+var b = blocks.select(b|b.Name = "Resistor3").first;
+var b2 = blocks.select(b|b.Name = "Resistor1").first;
+b.println();
+b2.println();
+
+replace(b, b2);
+//var outs = getOutLines(b);
+//for(t in outs) {
+//	printLine(t);
+//}
+
+//var ins = getInLines(b);
+//for(t in ins) {
+//	printLine(t);
+//}
+//
+//for(t in Line.all()) {
+//	printLine(t);
+//}
+"end".println();
+
+//showAllBlocksInformation();
+
+operation printLine(line) {
+	"-----------------------------------------------".println();
+	("line.SrcBlock         = "+line.getSource()).println();
+	("line.SrcBlockHandle   = "+line.SrcBlockHandle).println();
+	("line.SrcPort          = "+line.getSourcePort()).println();
+	("line.SrcPortHandle    = "+line.SrcPortHandle).println();
+	("line.DstBlock         = "+line.getDestination()).println();
+	("line.DstBlockHandle   = "+line.DstBlockHandle).println();
+	("line.DstPort          = "+line.getDestinationPort()).println();
+	("line.DstPortHandle    = "+line.DstPortHandle).println();
+}
+
+operation showAllBlocksInformation(){
+	var blocks = M!Block.all;
+	for (b in blocks){
+		"_______________________________________________".println();
+		b.println();
+		("b.Path                = "+b.Path).println();
+		("b.Position            = "+b.Position).println();
+		("b.Name                = "+b.Name).println();
+		("b.Handle              = "+b.Handle).println();
+		("b.BlockType           = "+b.BlockType).println();
+		("b.PortHandles.Inport  = "+b.PortHandles.Inport).println();
+		("b.PortHandles.Outport = "+b.PortHandles.Outport).println();
+//		("b.PortHandles.Enable  = "+b.PortHandles.Enable).println();
+//		("b.PortHandles.Trigger = "+b.PortHandles.Trigger).println();
+//		("b.PortHandles.State   = "+b.PortHandles.State).println();
+		("b.PortHandles.LConn   = "+b.PortHandles.LConn).println();
+		("b.PortHandles.RConn   = "+b.PortHandles.RConn).println();
+//		("b.PortHandles.Ifaction= "+b.PortHandles.Ifaction).println();
+//		("b.PortHandles.Reset   = "+b.PortHandles.Reset).println();
+//		("b.PortHandles.Event   = "+b.PortHandles.Event).println();
+		for (line in b.portconnectivity){
+			if (line.isDefined()){
+				"+++++++++++++++++++++++".println();
+				("line                  = "+line).println();
+				("line.Position         = "+line.Position).println();
+				("line.SrcBlock         = "+line.SrcBlock).println();
+				("line.SrcPort          = "+line.SrcPort).println();
+				("line.DstBlock         = "+line.DstBlock).println();
+				("line.DstPort          = "+line.DstPort).println();
+			}
+		}
+	}
+}

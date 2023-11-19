@@ -34,6 +34,35 @@ public class SimulinkLine extends SimulinkElement {
 	private Object get(String val) throws MatlabException{
 		return engine.evalWithSetupAndResult("handle = ?;", "get_param(handle, '?');", this.handle, val);
 	}
+	
+	private void set(String val) throws MatlabException{
+		engine.evalWithSetupAndResult("handle = ?;", "set_param(handle, '?');", this.handle, val);
+	}
+	
+	public void setSourceBlock(Double val) {
+		try {
+			String command = "handle = ?;" 
+					+ "set_param(handle,'SrcBlock', '?');";
+			
+			engine.eval(command, this.handle, val);
+			engine.flush();
+		} catch (MatlabException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void setSourcePort(Double val) {
+		try {
+			String command = "handle = ?;" 
+					+ "set_param(handle,'SrcPort', '?');";
+			engine.eval(command, this.handle, val);
+			engine.flush();
+		} catch (MatlabException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public SimulinkBlock getDestination() throws EolRuntimeException {
 		try {
