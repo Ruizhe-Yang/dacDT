@@ -5,17 +5,55 @@ var new_reading = new Map;
 "Begin...".println();
 //showAllBlocksInformation();
 init();
+//test1();
+test2();
 //iterateResistor("Resistor1");
 //randomMap.keySet().println();
-execute(Sequence{"A", "A", "A", "A", "A", "A", "A"});
-//execute(Sequence{"E", "E", "E", "E", "E", "E", "E"});
-//execute(Sequence{"E", "A", "E", "E", "E", "E", "E"});
-//execute(Sequence{"E", "E", "A", "E", "E", "E", "E"});
-//execute(Sequence{"E", "E", "E", "A", "E", "E", "E"});
-//execute(Sequence{"E", "E", "E", "E", "A", "E", "E"});
-//execute(Sequence{"E", "E", "E", "E", "E", "A", "E"});
-//execute(Sequence{"E", "E", "E", "E", "E", "E", "A"});
+
+
+
 "Done".println();
+operation test1(){
+	execute(Sequence{"E", "E", "E", "E", "E", "E", "E", "E"});
+	execute(Sequence{"A", "E", "E", "E", "E", "E", "E", "E"});
+	execute(Sequence{"E", "A", "E", "E", "E", "E", "E", "E"});
+	execute(Sequence{"E", "E", "A", "E", "E", "E", "E", "E"});
+	execute(Sequence{"E", "E", "E", "A", "E", "E", "E", "E"});
+	execute(Sequence{"E", "E", "E", "E", "A", "E", "E", "E"});
+	execute(Sequence{"E", "E", "E", "E", "E", "A", "E", "E"});
+	execute(Sequence{"E", "E", "E", "E", "E", "E", "A", "E"});
+	execute(Sequence{"E", "E", "E", "E", "E", "E", "E", "A"});
+}
+
+operation test2(){
+	var alphabet = Sequence {"A", "B", "C", "D"};
+//	var alphabet = Sequence {"A", "B"};
+	var number = 1;
+	for (a in alphabet){
+		for (b in alphabet){
+			for (c in alphabet){
+				for (d in alphabet){
+					for (e in alphabet){
+						for (f in alphabet){
+							number.println();
+							var input = Sequence{};
+							input.add(a);
+							input.add(b);
+							input.add(c);
+							input.add("A");
+							input.add("A");
+							input.add(d);
+							input.add(e);
+							input.add(f);
+							execute(input);
+							number++;
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 // inputs is a Sequence which has 7 String, ABCD.
 operation execute(inputs : Sequence){
@@ -27,6 +65,7 @@ operation execute(inputs : Sequence){
 	setComponent("Variable Resistor4", inputs[4]);
 	setComponent("Source", inputs[5]);
 	setComponent("Op-Amp", inputs[6]);
+	setComponent("Op-Amp1", inputs[7]);
 	simulate();
 	new_reading.put("array", getReading("u"));
 	save_reading_result(inputs);
@@ -42,15 +81,27 @@ operation save_reading_result(inputs : Sequence) {
 	a.five = inputs[4];
 	a.six = inputs[5];
 	a.seven = inputs[6];
+	a.eight = inputs[7];
 	a.mean = (mean(readings)-6.65).abs();
 	a.std = std(readings);
-	("mean:" + a.mean + "  std:" + a.std).println();
+	a.percent = (std(readings)*3+(mean(readings)-6.65))/6.65*100;
 	a.cost = inputs.getCost();
+	("mean:" + a.mean + "  std:" + a.std + "  percent:" + a.percent + "  cost:" + a.cost).println();
 }
 
 operation Sequence getCost(){
 	var costs = getCosts();
-//	costs.println();
+	var cost = 0.0;
+	for (i in 0.to(7)){
+		switch(self[i]) {
+		case "A": cost += costs[i].A.asReal();
+		case "B": cost += costs[i].B.asReal();
+		case "C": cost += costs[i].C.asReal();
+		case "D": cost += costs[i].D.asReal();
+		case "E": cost += costs[i].E.asReal();
+		}
+	}
+	return cost;
 }
 
 operation setComponent(name: String, attr : String) {
@@ -107,7 +158,7 @@ operation setComponent(name: String, attr : String) {
 //}
 
 operation mean(input) {
-	return input.sum()/input.size();
+	return input.sum()/(input.size()-1);
 }
 
 operation std(input) {
@@ -117,7 +168,7 @@ operation std(input) {
 	for(i in input) {
 		diff += math.pow(i-mean, 2);
 	}
-	return math.sqrt(diff/input.size());
+	return math.sqrt(diff/(input.size()-1));
 }
 
 operation simulate() {
@@ -192,7 +243,7 @@ operation getLevel(name, level) {
 	}
 	var rate = ret.asReal();
 	var value = diff.Value.asReal();
-	return (rate*value/2.0).pow(2);
+	return (rate*value/3.0).pow(2);
 }
 
 operation simulate() {
@@ -241,12 +292,7 @@ operation getAllBlocks() {
 }
 
 operation getBlockFuzzy(name : String) {
-	if (name = "Source"){
-		return getAllBlocks().select(b|b.Name = "Controlled Voltage\nSource").first();
-	}
-	else{
-		return getAllBlocks().select(b|b.Name = name).first();
-	}
+	return getAllBlocks().select(b|b.Name = name).first();
 }
 
 operation getBlock(name) {
@@ -290,14 +336,14 @@ operation showAllBlocksInformation(){
 	}
 }
 
-operation test() {
-	getLevel("Variable Resistor", "A").println();
-
-	getLevel("Source", "A").println();
-	
-	getLevel("Op-Amp", "A").println();
-	
-	for(k in randomMap.keySet()) {
-		getBlockFuzzy(k).println();
-	}
-}
+//operation test() {
+//	getLevel("Variable Resistor", "A").println();
+//
+//	getLevel("Source", "A").println();
+//	
+//	getLevel("Op-Amp", "A").println();
+//	
+//	for(k in randomMap.keySet()) {
+//		getBlockFuzzy(k).println();
+//	}
+//}
