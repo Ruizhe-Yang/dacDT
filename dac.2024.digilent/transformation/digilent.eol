@@ -5,19 +5,51 @@ var new_reading;
 
 
 init();
-iterateResistors();
+iterateResistor("Resistor1");
 
 operation iterateResistors() {
 	var resistor = getBlockFuzzy(randomMap.keySet().first());
 	var level = getLevel(resistor.Name, "A");
 	var random = randomMap.get(resistor.Name);
 	random.Variance = level;
-	random.println();
-	random.Variance.println();
 	simulate();	
 	new_reading = getReading("u");
 	new_reading.last.println();
 	save_reading_resistor(new_reading, "A");
+}
+
+operation iterateResistor(resistor) {
+	var resistor = getBlockFuzzy(randomMap.keySet().first());
+	var level = getLevel(resistor.Name, "A");
+	var random = randomMap.get(resistor.Name);
+	random.Variance = level;
+	simulate();	
+	new_reading = getReading("u");
+	save_reading_resistor(new_reading, "A");
+	
+	//B
+	var level = getLevel(resistor.Name, "B");
+	var random = randomMap.get(resistor.Name);
+	random.Variance = level;
+	simulate();	
+	new_reading = getReading("u");
+	save_reading_resistor(new_reading, "B");
+	
+	//C
+	var level = getLevel(resistor.Name, "C");
+	var random = randomMap.get(resistor.Name);
+	random.Variance = level;
+	simulate();	
+	new_reading = getReading("u");
+	save_reading_resistor(new_reading, "C");
+	
+	//D
+	var level = getLevel(resistor.Name, "D");
+	var random = randomMap.get(resistor.Name);
+	random.Variance = level;
+	simulate();	
+	new_reading = getReading("u");
+	save_reading_resistor(new_reading, "D");
 }
 
 operation simulate() {
