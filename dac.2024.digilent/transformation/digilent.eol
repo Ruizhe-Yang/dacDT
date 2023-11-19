@@ -1,11 +1,13 @@
 
 var randomMap = new Map;
 var original_reading;
-var new_reading;
+var new_reading = new Map;
 
-
+"Begin...".println();
 init();
 iterateResistor("Resistor1");
+
+"Done".println();
 
 operation iterateResistors() {
 	var resistor = getBlockFuzzy(randomMap.keySet().first());
@@ -24,32 +26,32 @@ operation iterateResistor(resistor) {
 	var random = randomMap.get(resistor.Name);
 	random.Variance = level;
 	simulate();	
-	new_reading = getReading("u");
-	save_reading_resistor(new_reading, "A");
+	new_reading.put("A", getReading("u"));
 	
 	//B
 	var level = getLevel(resistor.Name, "B");
 	var random = randomMap.get(resistor.Name);
 	random.Variance = level;
 	simulate();	
-	new_reading = getReading("u");
-	save_reading_resistor(new_reading, "B");
+	new_reading.put("B", getReading("u"));
 	
 	//C
 	var level = getLevel(resistor.Name, "C");
 	var random = randomMap.get(resistor.Name);
 	random.Variance = level;
 	simulate();	
-	new_reading = getReading("u");
-	save_reading_resistor(new_reading, "C");
+	new_reading.put("C", getReading("u"));
 	
 	//D
 	var level = getLevel(resistor.Name, "D");
 	var random = randomMap.get(resistor.Name);
 	random.Variance = level;
 	simulate();	
-	new_reading = getReading("u");
-	save_reading_resistor(new_reading, "D");
+	new_reading.put("D", getReading("u"));
+	for(v in new_reading.values()) {
+		v.size().println();
+	}
+	save_reading_resistor();
 }
 
 operation simulate() {
@@ -61,38 +63,27 @@ operation init() {
 	initMap();
 	simulate();
 	original_reading = getReading("u");
-	original_reading.last.println();
+	original_reading.size().println();
 	save_reading(original_reading);
 }
 
-operation save_reading_resistor(readings, level) {
-	switch(level) {
-		case "A": {
-			for(r in readings) {
-				var reading = new T!Resistor1;
-				reading.A = r;
-			}
-		}
-		case "B":{
-			for(r in readings) {
-				var reading = new T!Resistor1;
-				reading.B = r;
-			}
-		}
-		case "C": {
-			for(r in readings) {
-				var reading = new T!Resistor1;
-				reading.C = r;
-			}
-		}
-		case "D": {
-			for(r in readings) {
-				var reading = new T!Resistor1;
-				reading.D = r;
-			}
-		}
-	}
+operation save_reading_resistor() {
+	var readingsA = new_reading.get("A");
+	var readingsB = new_reading.get("B");
+	var readingsC = new_reading.get("C");
+	var readingsD = new_reading.get("D");
 	
+	readingsA.size().println();
+	readingsB.size().println();
+	readingsC.size().println();
+	readingsD.size().println();
+	for(i in Sequence{0.. (readingsA.size()-2)}) {
+		var a = new T!Resistor1;
+		a.A = readingsA.at(i);
+		a.B = readingsB.at(i);
+		a.C = readingsC.at(i);
+		a.D = readingsD.at(i);
+	}
 }
 
 
