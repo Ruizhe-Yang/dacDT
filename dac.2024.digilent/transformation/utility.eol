@@ -120,6 +120,7 @@ operation replace(element, newElement) {
 		
 			if(isLConn(element, srcPort)) {
 				var lconn = newElement.getLConns().first();
+				l.errln();
 				lconn.errln();
 				l.SrcBlock = newElement;
 				l.SrcBlockHandle = newElement.handle;
