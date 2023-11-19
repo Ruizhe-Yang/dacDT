@@ -4,21 +4,99 @@ var original_reading;
 var new_reading = new Map;
 
 "Begin...".println();
+//showAllBlocksInformation();
 init();
-iterateResistor("Resistor1");
-
+//iterateResistor("Resistor1");
+//randomMap.keySet().println();
+execute(Sequence{"A", "E", "E", "E", "E", "E", "E"});
+execute(Sequence{"E", "A", "E", "E", "E", "E", "E"});
+execute(Sequence{"E", "E", "A", "E", "E", "E", "E"});
+execute(Sequence{"E", "E", "E", "A", "E", "E", "E"});
+execute(Sequence{"E", "E", "E", "E", "A", "E", "E"});
+execute(Sequence{"E", "E", "E", "E", "E", "A", "E"});
+execute(Sequence{"E", "E", "E", "E", "E", "E", "A"});
 "Done".println();
 
-operation iterateResistors() {
-	var resistor = getBlockFuzzy(randomMap.keySet().first());
-	var level = getLevel(resistor.Name, "A");
-	var random = randomMap.get(resistor.Name);
-	random.Variance = level;
-	simulate();	
-	new_reading = getReading("u");
-	new_reading.last.println();
-	save_reading_resistor(new_reading, "A");
+// inputs is a Sequence which has 7 String, ABCD.
+operation execute(inputs : Sequence){
+	setComponent("Variable Resistor", inputs[0]);
+	setComponent("Variable Resistor1", inputs[1]);
+	setComponent("Variable Resistor2", inputs[2]);
+	setComponent("Variable Resistor3", inputs[3]);
+	setComponent("Variable Resistor4", inputs[4]);
+	setComponent("Source", inputs[5]);
+	setComponent("Op-Amp", inputs[6]);
+	simulate();
+	new_reading.put("array", getReading("u"));
+	save_reading_seven(inputs);	
 }
+
+operation save_reading_seven(inputs : Sequence) {
+	var readings = new_reading.get("array");
+	var a = new T!Origin;
+	a.one = inputs[0];
+	a.two = inputs[1];
+	a.three = inputs[2];
+	a.four = inputs[3];
+	a.five = inputs[4];
+	a.six = inputs[5];
+	a.seven = inputs[6];
+	a.mean = mean(readings);
+	a.std = std(readings);
+}
+
+operation setComponent(name: String, attr : String) {
+	var component = getBlockFuzzy(name);
+	var level = getLevel(name, attr);
+	var random = randomMap.get(name);
+	random.Variance = level;
+	random.Seed = getRandomInt(1000);
+}
+
+//operation iterateResistors() {
+//	var resistor = getBlockFuzzy(randomMap.keySet().first());
+//	var level = getLevel(resistor.Name, "A");
+//	var random = randomMap.get(resistor.Name);
+//	random.Variance = level;
+//	simulate();	
+//	new_reading = getReading("u");
+//	new_reading.last.println();
+//	save_reading_resistor(new_reading, "A");
+//}
+
+//operation iterateResistor(resistor) {
+//	var resistor = getBlockFuzzy(randomMap.keySet().first());
+//	var level = getLevel(resistor.Name, "A");
+//	var random = randomMap.get(resistor.Name);
+//	random.Variance = level;
+//	simulate();	
+//	new_reading.put("A", getReading("u"));
+//	
+//	//B
+//	var level = getLevel(resistor.Name, "B");
+//	var random = randomMap.get(resistor.Name);
+//	random.Variance = level;
+//	simulate();	
+//	new_reading.put("B", getReading("u"));
+//	
+//	//C
+//	var level = getLevel(resistor.Name, "C");
+//	var random = randomMap.get(resistor.Name);
+//	random.Variance = level;
+//	simulate();	
+//	new_reading.put("C", getReading("u"));
+//	
+//	//D
+//	var level = getLevel(resistor.Name, "D");
+//	var random = randomMap.get(resistor.Name);
+//	random.Variance = level;
+//	simulate();	
+//	new_reading.put("D", getReading("u"));
+//	for(v in new_reading.values()) {
+//		v.size().println();
+//	}
+//	save_reading_resistor();
+//}
 
 operation mean(input) {
 	return input.sum()/input.size();
@@ -34,42 +112,6 @@ operation std(input) {
 	return math.sqrt(diff/input.size());
 }
 
-
-
-operation iterateResistor(resistor) {
-	var resistor = getBlockFuzzy(randomMap.keySet().first());
-	var level = getLevel(resistor.Name, "A");
-	var random = randomMap.get(resistor.Name);
-	random.Variance = level;
-	simulate();	
-	new_reading.put("A", getReading("u"));
-	
-	//B
-	var level = getLevel(resistor.Name, "B");
-	var random = randomMap.get(resistor.Name);
-	random.Variance = level;
-	simulate();	
-	new_reading.put("B", getReading("u"));
-	
-	//C
-	var level = getLevel(resistor.Name, "C");
-	var random = randomMap.get(resistor.Name);
-	random.Variance = level;
-	simulate();	
-	new_reading.put("C", getReading("u"));
-	
-	//D
-	var level = getLevel(resistor.Name, "D");
-	var random = randomMap.get(resistor.Name);
-	random.Variance = level;
-	simulate();	
-	new_reading.put("D", getReading("u"));
-	for(v in new_reading.values()) {
-		v.size().println();
-	}
-	save_reading_resistor();
-}
-
 operation simulate() {
 	M.simulate();
 }
@@ -79,35 +121,40 @@ operation init() {
 	initMap();
 	simulate();
 	original_reading = getReading("u");
-	original_reading.size().println();
-	save_reading(original_reading);
+//	original_reading.size().println();
+//	save_reading(original_reading);
 }
 
-operation save_reading_resistor() {
-	var readingsA = new_reading.get("A");
-	var readingsB = new_reading.get("B");
-	var readingsC = new_reading.get("C");
-	var readingsD = new_reading.get("D");
-	
-	std(readingsA).println();
-	var a = new T!Resistor1;
-	a.A = mean(readingsA);
-	a.B = mean(readingsB);
-	a.C = mean(readingsC);
-	a.D = mean(readingsD);
-	
-//	readingsA.size().println();
-//	readingsB.size().println();
-//	readingsC.size().println();
-//	readingsD.size().println();
-//	for(i in Sequence{0.. (readingsA.size()-2)}) {
-//		var a = new T!Resistor1;
-//		a.A = readingsA.at(i);
-//		a.B = readingsB.at(i);
-//		a.C = readingsC.at(i);
-//		a.D = readingsD.at(i);
-//	}
+operation getRandomInt(n){
+	var rand = new Native("java.util.Random");
+	return rand.nextInt(n);
 }
+
+//operation save_reading_resistor() {
+//	var readingsA = new_reading.get("A");
+//	var readingsB = new_reading.get("B");
+//	var readingsC = new_reading.get("C");
+//	var readingsD = new_reading.get("D");
+//	
+//	std(readingsA).println();
+//	var a = new T!Resistor1;
+//	a.A = mean(readingsA);
+//	a.B = mean(readingsB);
+//	a.C = mean(readingsC);
+//	a.D = mean(readingsD);
+//	
+////	readingsA.size().println();
+////	readingsB.size().println();
+////	readingsC.size().println();
+////	readingsD.size().println();
+////	for(i in Sequence{0.. (readingsA.size()-2)}) {
+////		var a = new T!Resistor1;
+////		a.A = readingsA.at(i);
+////		a.B = readingsB.at(i);
+////		a.C = readingsC.at(i);
+////		a.D = readingsD.at(i);
+////	}
+//}
 
 
 operation save_reading(readings) {
@@ -133,6 +180,7 @@ operation getLevel(name, level) {
 		case "B": ret = diff.B;
 		case "C": ret = diff.C;
 		case "D": ret = diff.D;
+		case "E": ret = diff.E;
 	}
 	return ret;
 }
@@ -157,7 +205,7 @@ operation initMap() {
 		var random = getRandom(c.Random);
 		randomMap.put(c.Name, random);
 	}
-	randomMap.println();
+//	randomMap.println();
 }
 
 operation getRandom(name) {
@@ -179,12 +227,17 @@ operation getAllBlocks() {
 	return M!Block.all();
 }
 
-operation getBlockFuzzy(name) {
-	return getAllBlocks().select(b|b.Name.endsWith(name)).first;
+operation getBlockFuzzy(name : String) {
+	if (name = "Source"){
+		return getAllBlocks().select(b|b.Name = "Controlled Voltage\nSource").first();
+	}
+	else{
+		return getAllBlocks().select(b|b.Name = name).first();
+	}
 }
 
 operation getBlock(name) {
-	return getAllBlocks().select(b|b.Name = name).first;
+	return getAllBlocks().select(b|b.Name = name).first();
 }
 
 operation showAllBlocksInformation(){
