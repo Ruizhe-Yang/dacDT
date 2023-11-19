@@ -15,10 +15,10 @@ b.println();
 b2.println();
 
 replace(b, b2);
-//var outs = getOutLines(b);
-//for(t in outs) {
-//	printLine(t);
-//}
+var outs = getOutLines(b);
+for(t in outs) {
+	printLine(t);
+}
 
 //var ins = getInLines(b);
 //for(t in ins) {
