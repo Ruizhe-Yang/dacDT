@@ -141,13 +141,13 @@ public class MatlabEnginePool {
 	public static void main(String[] args) throws Exception {
 		resolveFromEnv();
 		MatlabEnginePool pool = MatlabEnginePool.getInstance();
-		System.out.println(pool.pool.size());
+//		System.out.println(pool.pool.size());
 		MatlabEngine matlabEngine = pool.getMatlabEngine();
-		System.out.println("One Engine");
-		System.out.println(matlabEngine.isDisconnected());
+//		System.out.println("One Engine");
+//		System.out.println(matlabEngine.isDisconnected());
 		MatlabEngine.startMatlab();
 		String[] findMatlab = MatlabEngine.findMatlab();
-		System.out.println(Arrays.toString(findMatlab));
+//		System.out.println(Arrays.toString(findMatlab));
 		//System.out.println(matlabEngine.connectMatlab(findMatlab[0]));
 		pool.getMatlabEngine();
 	}

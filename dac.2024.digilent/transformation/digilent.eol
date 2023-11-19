@@ -1,4 +1,3 @@
-
 var randomMap = new Map;
 var original_reading;
 var new_reading = new Map;
@@ -8,17 +7,19 @@ var new_reading = new Map;
 init();
 //iterateResistor("Resistor1");
 //randomMap.keySet().println();
-execute(Sequence{"A", "E", "E", "E", "E", "E", "E"});
-execute(Sequence{"E", "A", "E", "E", "E", "E", "E"});
-execute(Sequence{"E", "E", "A", "E", "E", "E", "E"});
-execute(Sequence{"E", "E", "E", "A", "E", "E", "E"});
-execute(Sequence{"E", "E", "E", "E", "A", "E", "E"});
-execute(Sequence{"E", "E", "E", "E", "E", "A", "E"});
-execute(Sequence{"E", "E", "E", "E", "E", "E", "A"});
+execute(Sequence{"A", "A", "A", "A", "A", "A", "A"});
+//execute(Sequence{"E", "E", "E", "E", "E", "E", "E"});
+//execute(Sequence{"E", "A", "E", "E", "E", "E", "E"});
+//execute(Sequence{"E", "E", "A", "E", "E", "E", "E"});
+//execute(Sequence{"E", "E", "E", "A", "E", "E", "E"});
+//execute(Sequence{"E", "E", "E", "E", "A", "E", "E"});
+//execute(Sequence{"E", "E", "E", "E", "E", "A", "E"});
+//execute(Sequence{"E", "E", "E", "E", "E", "E", "A"});
 "Done".println();
 
 // inputs is a Sequence which has 7 String, ABCD.
 operation execute(inputs : Sequence){
+	inputs.println();
 	setComponent("Variable Resistor", inputs[0]);
 	setComponent("Variable Resistor1", inputs[1]);
 	setComponent("Variable Resistor2", inputs[2]);
@@ -28,10 +29,10 @@ operation execute(inputs : Sequence){
 	setComponent("Op-Amp", inputs[6]);
 	simulate();
 	new_reading.put("array", getReading("u"));
-	save_reading_seven(inputs);	
+	save_reading_result(inputs);
 }
 
-operation save_reading_seven(inputs : Sequence) {
+operation save_reading_result(inputs : Sequence) {
 	var readings = new_reading.get("array");
 	var a = new T!Origin;
 	a.one = inputs[0];
@@ -41,15 +42,22 @@ operation save_reading_seven(inputs : Sequence) {
 	a.five = inputs[4];
 	a.six = inputs[5];
 	a.seven = inputs[6];
-	a.mean = mean(readings);
+	a.mean = (mean(readings)-6.65).abs();
 	a.std = std(readings);
+	("mean:" + a.mean + "  std:" + a.std).println();
+	a.cost = inputs.getCost();
+}
+
+operation Sequence getCost(){
+	var costs = getCosts();
+//	costs.println();
 }
 
 operation setComponent(name: String, attr : String) {
 	var component = getBlockFuzzy(name);
-	var level = getLevel(name, attr);
+	var value = getLevel(name, attr);
 	var random = randomMap.get(name);
-	random.Variance = level;
+	random.Variance = value;
 	random.Seed = getRandomInt(1000);
 }
 
@@ -182,7 +190,9 @@ operation getLevel(name, level) {
 		case "D": ret = diff.D;
 		case "E": ret = diff.E;
 	}
-	return ret;
+	var rate = ret.asReal();
+	var value = diff.Value.asReal();
+	return (rate*value/2.0).pow(2);
 }
 
 operation simulate() {
@@ -199,13 +209,16 @@ operation getComponents() {
 	return E!Component.all;
 }
 
+operation getCosts() {
+	return E!Cost.all;
+}
+
 operation initMap() {
 	var components = getComponents();
 	for(c in components) {
 		var random = getRandom(c.Random);
 		randomMap.put(c.Name, random);
 	}
-//	randomMap.println();
 }
 
 operation getRandom(name) {
