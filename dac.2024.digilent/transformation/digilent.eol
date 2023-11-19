@@ -1,557 +1,167 @@
-var map = new Map;
 
-var cache = new Map;
-var resistorCache = new Map;
-var original_settings = new Map;
+var randomMap = new Map;
 var original_reading;
-var rand;
+var new_reading = new Map;
 
+"Begin...".println();
+init();
+iterateResistor("Resistor1");
 
-"Begin run...".println();
-//showAllBlocksInformation();
-demo1();
-//var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-//var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-//var r3 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-//var rconn = r1.PortHandles.RConn;
-//var lconn = r2.PortHandles.LConn;
-//r1.linkTo(r2, rconn, lconn);
-//var rconn = r2.PortHandles.RConn;
-//var lconn = r3.PortHandles.LConn;
-//r2.linkTo(r3, rconn, lconn);
-//replaceResistor(r2);
-//var a = createRand();
-//for (aa in a){
-//	aa.println();
-//}
-
-//showAllBlocksInformation();
-
-//var r1 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-//var r2 = new `fl_lib/Electrical/Electrical Elements/Resistor`;
-//r1.println();
-//r2.println();
-//r1.link(r2, 1.0, 2.0);
-//createElements();
-
-"Run done!".println();
-
-operation demo1() {
-//	init();
-	
-	var r = getAllBlocks().select(s|s.Name = "Resistor2").first();
-	replaceResistor(r);
-	simulate();
-	var reading = getReading("u");
-	restoreResistor(r);
-	original_reading.println();
-	reading.println();
-}
+"Done".println();
 
 operation iterateResistors() {
-	var resistors = getResistors();
-	for(r in resistors) {
-		var handle = r.handle;
-		replaceResistor(r);
-		simulate();
-		reading = getReading("u");
-		restoreResistor(handle);
-	}
+	var resistor = getBlockFuzzy(randomMap.keySet().first());
+	var level = getLevel(resistor.Name, "A");
+	var random = randomMap.get(resistor.Name);
+	random.Variance = level;
+	simulate();	
+	new_reading = getReading("u");
+	new_reading.last.println();
+	save_reading_resistor(new_reading, "A");
 }
 
-operation init() {
-	save_origin();
-	simulate();
-	original_reading = getReading("u");
+operation iterateResistor(resistor) {
+	var resistor = getBlockFuzzy(randomMap.keySet().first());
+	var level = getLevel(resistor.Name, "A");
+	var random = randomMap.get(resistor.Name);
+	random.Variance = level;
+	simulate();	
+	new_reading.put("A", getReading("u"));
+	
+	//B
+	var level = getLevel(resistor.Name, "B");
+	var random = randomMap.get(resistor.Name);
+	random.Variance = level;
+	simulate();	
+	new_reading.put("B", getReading("u"));
+	
+	//C
+	var level = getLevel(resistor.Name, "C");
+	var random = randomMap.get(resistor.Name);
+	random.Variance = level;
+	simulate();	
+	new_reading.put("C", getReading("u"));
+	
+	//D
+	var level = getLevel(resistor.Name, "D");
+	var random = randomMap.get(resistor.Name);
+	random.Variance = level;
+	simulate();	
+	new_reading.put("D", getReading("u"));
+	for(v in new_reading.values()) {
+		v.size().println();
+	}
+	save_reading_resistor();
 }
 
 operation simulate() {
 	M.simulate();
 }
 
-operation getLine(source, target) {
-	var lines = getAllLines().select(l|l.getSource() = source and l.getDestination() = target);
-	return lines;
+
+operation init() {
+	initMap();
+	simulate();
+	original_reading = getReading("u");
+	original_reading.size().println();
+	save_reading(original_reading);
 }
 
-operation matchConn(a: Any, b: Real) {
-	a = a.asInteger();
-	var c = b.asInteger();
-	if(a = c) {
-		return b;
-	}
-	return -1;
-}
-
-operation restoreResistor(resistor) {
-	var rand = createRand();
-	var vr = rand.at(7);
-//	var source_rconn = vr.~source_rconn;
-//	var target_lconn = vr.~target_lconn;
+operation save_reading_resistor() {
+	var readingsA = new_reading.get("A");
+	var readingsB = new_reading.get("B");
+	var readingsC = new_reading.get("C");
+	var readingsD = new_reading.get("D");
 	
-	var source = resistor.~source;
-	var target = resistor.~target;
-	var source_rconn = resistor.~source_rconn;
-	var target_lconn = resistor.~target_lconn;
-	
-	for(lconn in target.getLConns()) {
-		var temp = matchConn(target_lconn, lconn);
-		if(temp <> -1) {
-			target_lconn = temp;
-			break; 
-		}
-	}
-	
-	for(rconn in source.getRConns()) {
-		var temp = matchConn(source_rconn, rconn);
-		if(temp <> -1) {
-			source_rconn = temp;
-			break; 
-		}
-	}
-	
-	var rconn = resistor.~rconn;
-	var lconn = resistor.~lconn;
-	
-	for(lc in resistor.getLConns()) {
-		var temp = matchConn(lconn, lc);
-		if(temp <> -1) {
-			lconn = temp;
-			break; 
-		}
-	}
-	
-	for(rc in resistor.getRConns()) {
-		var temp = matchConn(rconn, rc);
-		if(temp <> -1) {
-			rconn = temp;
-			break; 
-		}
-	}
-	
-	var vrrl = vr.getRConns().first().getLines().second;
-	var vrll = vr.getLConns().second().getLines().second;
-	
-//	var resistor = new `fl_lib/Electrical/Electrical Elements/Resistor`; 
-	resistor.linkTo(target, rconn, target_lconn);
-	source.linkTo(resistor, source_rconn, lconn);
-	
-	delete vrrl;
-	delete vrll;
-}
-
-operation replaceResistor(resistor: Any) {
-	var rand = createRand();
-	var vr = rand.at(7);
-	var rrconn = resistor.PortHandles.RConn;
-	var rlconn = resistor.PortHandles.LConn;
-	var rl = resistor.getLConns().first().getlines().first;
-	var source = rl.getSource();
-	var source_rconn = rl.getSourcePort().handle;
-	
-	resistor.~rconn = rrconn;
-	resistor.~lconn = rlconn;
-	
-	var rr = resistor.getRConns().first().getlines().first;
-	var target = rr.getDestination();
-	var target_lconn = rr.getDestinationPort().handle;
-	rl.println();
-	source.println();
-	source_rconn.println();
-	rr.println();
-	target.println();
-	target_lconn.println();
-	
-	resistor.~target = target;
-	resistor.~source = source;
-	resistor.~target_lconn = target_lconn.asInteger();
-	resistor.~source_rconn = source_rconn.asInteger();
-	
-	var vrl = vr.PortHandles.LConn.second;
-	var vrr = vr.PortHandles.RConn;
-	
-	
-	cache.put(resistor.handle, rand);
-	
-	delete rl;
-	delete rr;
-//	delete resistor;
-	resistorCache.put(resistor.Name, resistor);
-	resistor.~rl = rl;
-	resistor.~rr = rr;
-	
-	
-	vr.linkTo(target, vrr, target_lconn);
-	source.linkTo(vr, source_rconn, vrl);
-	
-	vr.~target = target;
-	vr.~source = source;
-	vr.~target_lconn = target_lconn;
-	vr.~source_rconn = source_rconn;
-	vr.~vrr = vrr;
-	vr.~vrl = vrl;
-}
-
-operation createElements(){
-	// Create elements
-	var sineWave = new `simulink/Sources/Sine Wave`;
-	var gain = new `simulink/Math Operations/Gain`;
-	var saturation = new `simulink/Discontinuities/Saturation`;
-	var busCreator = new `simulink/Signal Routing/Bus Creator`;
-	var scope = new `simulink/Sinks/Scope`;
-
-	// Position them on the diagram
-	sineWave.position = "[100 100 130 130]";
-	gain.position = "[200 100 230 130]";
-	saturation.position = "[300 100 330 130]";
-	busCreator.position = "[400 70 410 300]";
-	scope.position = "[500 175 530 205]";
-	
-	// Set their properties
-	gain.gain = 2;
-	busCreator.inputs = 3;
-	
-	// Link them
-	sineWave.link(gain);
-	gain.link(saturation);
-	saturation.link(busCreator);
-	gain.linkTo(busCreator, 2);
-	sineWave.linkTo(busCreator, 3);
-	busCreator.link(scope);
-	
-	sineWave.linkTo(gain, 1.0, 2.0);
-	
-//	populateMap();
-//	attachRandToElement(sineWave, 1);
-//	removeRandFromElement(sineWave);
-}
-
-
-//cached for dynamic programming
-@cached
-operation getAllLines() {
-	return Line.all();
-}
-
-//cached for dynamic programming
-@cached
-operation getAllBlocks() {
-	return M!Block.all();
-}
-
-/*
-* This function gets the port number of the line, by counting, there is no better way of doing this
-*/
-operation getPortNumber(element: Any, line: Any) {
-	var inports = element.getInports();
-	var i = 1;
-	for(port in inports) {
-		if(port.getLines().contains(line)) {
-			return i;
-		}
-		i++;
+	readingsA.size().println();
+	readingsB.size().println();
+	readingsC.size().println();
+	readingsD.size().println();
+	for(i in Sequence{0.. (readingsA.size()-2)}) {
+		var a = new T!Resistor1;
+		a.A = readingsA.at(i);
+		a.B = readingsB.at(i);
+		a.C = readingsC.at(i);
+		a.D = readingsD.at(i);
 	}
 }
 
-/*
-* This function creates a rand interference and connects the rand like so: 
-* element -> sum
-* rand -> sum
-* sum -> target
-*/
-operation attachRandToElement(element: Any, index: Integer) {
-	//get lines sequence from map
-	var lines = map.get(element.handle);
-	
-	//create random and get the sum (which connects the element, and the target)
-	var rand = createRand();
-	var sum = rand.at(1);
-	
-	//get the line struct at the specific index
-	var line = lines.at(index-1);
-	line.println();
-	//get the line
-	var l = line.at(0);
-	//get the target the line connects
-	var target = line.at(1);
-	
-	//this algorithm gets the port number from the target
-	var i = getPortNumber(target, l);
-	
-	i.println();
-	
-	//delete l
-	delete l;
-	
-	//connect sum to target (using the same index)
-	sum.linkTo(target, i);
-	//connect element to sum (using index)
-	element.linkTo(sum, 2);
-	
-	//extended property to record the previous target
-	element.~target = target;
-	//record the rand associated to the element
-	element.~rand = rand;
-	//record the target port number 
-	element.~linkIndex = i;
-}
 
-/*
-* Ruizhe to Implement: fluctuation is percentage of fluctuation
-*/
-operation attachRandToElement(element: Any, index: Integer, fluctuation: Real) {
-	//get lines sequence from map
-	var lines = map.get(element.handle);
-	
-	//create random and get the sum (which connects the element, and the target)
-	var rand = createRand();
-	var sum = rand.at(1);
-	
-	//get the line struct at the specific index
-	var line = lines.at(index-1);
-	line.println();
-	//get the line
-	var l = line.at(0);
-	//get the target the line connects
-	var target = line.at(1);
-	
-	//this algorithm gets the port number from the target
-	var i = getPortNumber(target, l);
-	
-	i.println();
-	
-	//delete l
-	delete l;
-	
-	//connect sum to target (using the same index)
-	sum.linkTo(target, i);
-	//connect element to sum (using index)
-	element.linkTo(sum, 2);
-	
-	//extended property to record the previous target
-	element.~target = target;
-	//record the rand associated to the element
-	element.~rand = rand;
-	//record the target port number 
-	element.~linkIndex = i;
-}
-
-/*
-* Ruizhe to implement
-*/
-operation getValueOfBlock(element: Any) {
-}
-
-
-/*
-* This function removes the rand from the element, and cleans up the extended properties
-*/
-operation removeRandFromElement(element: Any) {
-	var target = element.~target;
-	if(target.isDefined()) {
-		var rand = element.~rand;
-		var linkIndex = element.~linkIndex;
-		
-		var sum = rand.at(1);
-		sum.unlinkTo(target, linkIndex);
-		element.unlinkTo(sum, 2);
-		element.linkTo(target, linkIndex);
-		deleteRand(rand);
-		//clean up extended proeprty
-		element.~target = null;
-		element.~rand = null;
-		element.~linkIndex = null;
-	}
-}
-
-/*
-*This function removes the rand
-*/
-operation deleteRand(seq: Sequence) {
-	var rand = seq.at(0);
-	var sum = seq.at(1);
-	var line = seq.at(2);
-	delete rand;
-	delete sum;
-	delete line;
-}
-
-//generate the map for blocks, the map is {key: b.handle, Sequence{line}}
-operation populateMap() {
-	var blocks = getAllBlocks();
-	for(b in blocks) {
-		var seq = getLinesFrom(b);
-		map.put(b.handle, seq);
-	}
-}
-
-/*
-*This function returns a Sequence{Sequence{}}, containing pairs of {line, target} for the source
-*/
-operation getLinesFrom(element: Any) {
-	var ret = new Sequence;
-	var lines = getAllLines();
-	for(l in lines) {
-		if(l.getSource() = element) {
-			var pair = new Sequence;
-			pair.add(l);
-			pair.add(l.getDestination());
-			ret.add(pair);
-		}
-	}
-//	(element + ": " + ret).println();
-	return ret;
-}
-
-
-operation createVariableResistor() {
-	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
-	return vr;
-}
-
-/*
-*This function creates the random number and the sum and return them as Sequence{rand, sum, step, line(rand, sum), line(step, sum)}
-*/
-operation createRand() {
-	if(rand.isDefined()) {
-		return rand;
-	}
-	var ret = new Sequence;
-	var rand = new `simulink/Sources/Random Number`;
-	var sum = new `simulink/Math Operations/Sum`;
-	var step = new `simulink/Sources/Step`;
-	var converter = new `nesl_utility/Simulink-PS Converter`;
-	
-	rand.linkTo(sum, 1);
-	step.linkTo(sum, 2);
-	ret.add(rand);
-	ret.add(sum);
-	ret.add(step);
-	ret.add(converter);
-	
-	var line1;
-	var inports = sum.getInports();
-	for(port in inports) {
-		for(l in port.getLines()) {
-			if(l.getSource = rand) {
-				line1 = l;
-				break;
-			}
-		}
-	}
-	if(line1.isDefined()) {
-		ret.add(line1);
-	}
-	
-	var line2;
-	var inports = sum.getInports();
-	for(port in inports) {
-		for(l in port.getLines()) {
-			if(l.getSource = step) {
-				line2 = l;
-				break;
-			}
-		}
-	}
-	if(line2.isDefined()) {
-		ret.add(line2);
-	}
-	sum.linkTo(converter, 1);
-
-		
-	var line3;
-	var inports = converter.getInports();
-	for(port in inports) {
-		for(l in port.getLines()) {
-			if(l.getSource = sum) {
-				line3 = l;
-				break;
-			}
-		}
-	}
-	if(line3.isDefined()) {
-		ret.add(line3);
-	}
-
-
-	var vr = new `fl_lib/Electrical/Electrical Elements/Variable Resistor`;
-	var lconn = vr.PortHandles.LConn.first;
-	var rconn = converter.PortHandles.RConn;
-	sum.linkTo(vr, rconn, lconn);
-
-	
-	ret.add(vr);
-	
-	var line4;
-	var inports = vr.getLConns();
-	for(port in inports) {
-		for(l in port.getLines()) {
-			if(l.getSource = converter) {
-				line4 = l;
-				break;
-			}
-		}
-	}
-	if(line4.isDefined()) {
-		ret.add(line4);
-	}
-	
-	rand = ret;
-	return ret;
-}
-
-@cached
-operation getResistors() {
-	return getAllBlocks().select(b|b.Name = "Resistor");
-}
-
-operation getCapacitors() {
-	return getAllBlocks().select(b|b.Name = "Capacitor");
-}
-
-operation getInductors() {
-	return getAllBlocks().select(b|b.Name = "Inductor");
-}
-
-operation getCurrentSensors() {
-	return getAllBlocks().select(b|b.Name = "Current Sensor");
-}
-
-operation getScopes() {
-	return Scope.all();
-}
-
-operation getSolvers() {
-	return getAllBlocks().select(b|b.Name = "Solver Configuration");
-}
-
-operation getToWorkspace() {
-	return getAllBlocks().select(b|b.Name = "To Workspace");
-}
-
-operation save_origin() {
-	for(r in getResistors()) {
-		original_settings.put(r.Description, r.Resistance);
-	}
-	for(c in getCapacitors()) {
-		original_settings.put(c.Description, c.Capacitance);
-	}
-	for(l in getInductors()) {
-		original_settings.put(l.Description, l.Inductance);
+operation save_reading(readings) {
+	for(r in readings) {
+		var reading = new T!Origin;
+		reading.Value = r;
 	}
 }
 
 operation getReading(simout : String) {
 	var engine = getEngine();
-//	simout = "result";
 	engine.evalAsync("s = simout.get('"+simout+"')");
 	var s = engine.getVariable("s");
 	return s;
 }
 
+operation getLevel(name, level) {
+	var block = randomMap.get(name);
+	var diff = getComponents().select(c|c.Name = name).first();
+	var ret;
+	switch(level) {
+		case "A": ret = diff.A;
+		case "B": ret = diff.B;
+		case "C": ret = diff.C;
+		case "D": ret = diff.D;
+	}
+	return ret;
+}
+
+operation simulate() {
+	M.simulate();
+}
+
 @cached
 operation getEngine() {
 	return M.engine;
+}
+
+@cached
+operation getComponents() {
+	return E!Component.all;
+}
+
+operation initMap() {
+	var components = getComponents();
+	for(c in components) {
+		var random = getRandom(c.Random);
+		randomMap.put(c.Name, random);
+	}
+	randomMap.println();
+}
+
+operation getRandom(name) {
+	var randoms = getAllBlocks().select(r|r.BlockType = "RandomNumber");
+	return randoms.selectOne(r|r.Name.endsWith(name));
+}
+
+operation singleResistor(name, level) {
+	var block = getBlock(name);
+	
+}
+
+operation getBlockByHandle(handle) {
+	return getAllBlocks().select(b|b.handle = handle).first;
+}
+
+@cached
+operation getAllBlocks() {
+	return M!Block.all();
+}
+
+operation getBlockFuzzy(name) {
+	return getAllBlocks().select(b|b.Name.endsWith(name)).first;
+}
+
+operation getBlock(name) {
+	return getAllBlocks().select(b|b.Name = name).first;
 }
 
 operation showAllBlocksInformation(){
@@ -588,5 +198,17 @@ operation showAllBlocksInformation(){
 				("line.DstPort          = "+line.DstPort).println();
 			}
 		}
+	}
+}
+
+operation test() {
+	getLevel("Variable Resistor", "A").println();
+
+	getLevel("Source", "A").println();
+	
+	getLevel("Op-Amp", "A").println();
+	
+	for(k in randomMap.keySet()) {
+		getBlockFuzzy(k).println();
 	}
 }
