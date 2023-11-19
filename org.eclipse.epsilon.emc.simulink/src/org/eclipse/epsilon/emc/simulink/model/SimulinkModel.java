@@ -295,7 +295,7 @@ public class SimulinkModel extends AbstractSimulinkModel implements IOperationCo
 	public void simulate() throws InterruptedException {
 		String name = getFile().getName().substring(0, getFile().getName().lastIndexOf("."));
 		try {
-			engine.evalAsync("simout = sim('" + name + "', 'SimulationMode','normal','StopTime','1e-2', 'SaveState','on','StateSaveName','xout', 'SaveOutput','on', 'OutputSaveName','yout', 'SaveFormat', 'Dataset');").get();
+			engine.evalAsync("simout = sim('" + name + "', 'SimulationMode','normal','StopTime','1', 'SaveState','on','StateSaveName','xout', 'SaveOutput','on', 'OutputSaveName','yout', 'SaveFormat', 'Dataset');").get();
 		} catch (MatlabException | ExecutionException e) {
 			e.printStackTrace();
 		}
