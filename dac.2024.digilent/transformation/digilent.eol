@@ -20,6 +20,22 @@ operation iterateResistors() {
 	save_reading_resistor(new_reading, "A");
 }
 
+operation mean(input) {
+	return input.sum()/input.size();
+}
+
+operation std(input) {
+	var mean = mean(input);
+	var diff = 0;
+	var math = Native("java.lang.Math");
+	for(i in input) {
+		diff += math.pow(i-mean, 2);
+	}
+	return math.sqrt(diff/input.size());
+}
+
+
+
 operation iterateResistor(resistor) {
 	var resistor = getBlockFuzzy(randomMap.keySet().first());
 	var level = getLevel(resistor.Name, "A");
@@ -73,17 +89,24 @@ operation save_reading_resistor() {
 	var readingsC = new_reading.get("C");
 	var readingsD = new_reading.get("D");
 	
-	readingsA.size().println();
-	readingsB.size().println();
-	readingsC.size().println();
-	readingsD.size().println();
-	for(i in Sequence{0.. (readingsA.size()-2)}) {
-		var a = new T!Resistor1;
-		a.A = readingsA.at(i);
-		a.B = readingsB.at(i);
-		a.C = readingsC.at(i);
-		a.D = readingsD.at(i);
-	}
+	std(readingsA).println();
+	var a = new T!Resistor1;
+	a.A = mean(readingsA);
+	a.B = mean(readingsB);
+	a.C = mean(readingsC);
+	a.D = mean(readingsD);
+	
+//	readingsA.size().println();
+//	readingsB.size().println();
+//	readingsC.size().println();
+//	readingsD.size().println();
+//	for(i in Sequence{0.. (readingsA.size()-2)}) {
+//		var a = new T!Resistor1;
+//		a.A = readingsA.at(i);
+//		a.B = readingsB.at(i);
+//		a.C = readingsC.at(i);
+//		a.D = readingsD.at(i);
+//	}
 }
 
 
