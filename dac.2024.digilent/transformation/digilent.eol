@@ -5,8 +5,10 @@ var new_reading = new Map;
 "Begin...".println();
 //showAllBlocksInformation();
 init();
+//execute(Sequence{"B", "C", "A", "A", "A", "A", "B", "A"});
+
 //test1();
-test2();
+//test2();
 //iterateResistor("Resistor1");
 //randomMap.keySet().println();
 
